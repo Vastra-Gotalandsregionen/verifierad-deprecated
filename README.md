@@ -1,17 +1,18 @@
 # verifierad.nu - håll koll på din webbplats
 Projekt för att kontinuerligt övervaka en webbplats mätbara kvalitetsfaktorer.
 
-Ganska utvecklarcentrerat projekt, men förhoppningen är att kunna erbjuda koden 
-som en form av gratistjänst åtminstone för svensk offentlig sektor.
+Det här är ett ganska utvecklarcentrerat projekt. Förhoppningen är att kunna erbjuda koden som en gratistjänst på sikt, åtminstone för svensk offentlig sektor.
+
+[För att komma igång med en egen version av testet kollar du in vår HOW TO](HOWTO.md).
 
 ## Vill du bidra?
-Hör av dig!
+Hör av dig till [@marcusosterberg via Twitter](https://twitter.com/marcusosterberg)!
 
-## Vill du sponsra med drift av publik tjänst?
-Kontakta @marcusosterberg på Twitter!
+## Vill du sponsra med drift av projektet som publik tjänst?
+Kontakta [@marcusosterberg via Twitter](https://twitter.com/marcusosterberg)!
 
 ##Licens
-Repots innehåll erbjuds med MIT-licens.
+Projektets innehåll erbjuds med MIT-licens.
 
 ## Historik
 Koden har ursprungligen skrivit av Marcus Österberg, men som i och med detta projekt 
