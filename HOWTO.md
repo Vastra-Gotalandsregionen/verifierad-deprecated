@@ -57,10 +57,12 @@ I variablen *googlePageSpeedApiKey* (mellan citationstecknen) anger du den kod d
 ### Redigera filen *checkpagespeed.py*
 I slutet på filen hittar du en rad likt nedan:  
 > urlSet = default.processUrlFile('ÄNDRA-MIG.txt', False)
+
 La du din fil med adresser i samma mapp som Pythonfilen ändrar du *ÄNDRA-MIG.txt* till filens namn.
 
 En sista eventuell redigering du behöver göra är på sista raden.
 > pagespeed(url, 'TESTETS-NAMN', 'mobile')
+
 Här kan du sätta namnet på testet, men också justera din teststrategi. Antingen väljer du att skriva *mobile* eller *desktop* beroende på om du vill testa med en mobil- eller datorsanvändares behov i första rummet.
 
 ## 6. Köra Python-skriptet
