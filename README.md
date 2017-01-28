@@ -12,10 +12,11 @@ Hör av dig till [@marcusosterberg via Twitter](https://twitter.com/marcusosterb
 Kontakta [@marcusosterberg via Twitter](https://twitter.com/marcusosterberg)!
 
 ##Licens
-Projektets innehåll erbjuds med MIT-licens.
+Projektets innehåll erbjuds med MIT-licens. Det innebär att du vågar använda kod till lite vad du nu vill utan risk för att behöva ha med advokater att göra.
 
 ## Historik
-Koden har ursprungligen skrivit av Marcus Österberg, men som i och med detta projekt 
-gör det till öppen källkod. Hans arbetsgivare, Västra Götalandsregionen, sponsrar 
-med hans arbetstid inom uppdraget att bidra till webbriktlinjer.se - det här är ett
-exempel på verktyg för att mäta prestanda [Webbriktlinje 54](https://webbriktlinjer.se/r/54-optimera-webbplatsen-for-basta-prestanda/)
+Koden har ursprungligen skrivits av [Marcus Österberg](http://webbstrategiforalla.se/kontakt/marcus-osterberg/) för att skapa ett index kring [webbprestanda och webbanalys för svensk offentlig sektor](http://webbstrategiforalla.se/offentlig-sektors-webbprestanda/) under 2016. 
+
+Från och med 2017 blir detta projekt till en öppen källa (källkod). [Västra Götalandsregionen (VGR)](http://www.vgregion.se/) är projektets primära sponsor genom donerad arbetstid inom uppdraget att bidra till [webbriktlinjer.se / Vägledning för webbutveckling](https://webbriktlinjer.se/).
+
+Betrakta det här projektet som ett exempel på verktyg för att mäta prestanda i enlighet med [Webbriktlinje 54](https://webbriktlinjer.se/r/54-optimera-webbplatsen-for-basta-prestanda/) och hur VGR försöker följa upp sin [prestandabudget](https://github.com/Vastra-Gotalandsregionen/Webbanalys/blob/master/prestandabudgetar/www.vgregion.se.md).
