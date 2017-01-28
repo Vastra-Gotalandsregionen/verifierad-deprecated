@@ -14,8 +14,8 @@ Det finns två huvudsakliga metoder för att samla in många adresser. Enklast �
 Om du inte redan känner till adressen till webbplatsens sitemap kan du kolla om webbplatsen har en robots.txt i webbplatsens rot. Exempelvis om du skriver in webbplatsensdomän.se/robots.txt i adressfältet i webbläsaren.
 
 I en robots.txt kan innehållet se ut ungefär så här:  
-> User-agent: *
-> Disallow: /wp-admin/
+> User-agent: *  
+> Disallow: /wp-admin/  
 > Sitemap: http://webbplatsensdomän.se/sitemap.xml
 
 Det är det som anges som adress efter "Sitemap" du är ute efter. Mata in den i adressfältet i webbläsaren och kolla på vad som dyker upp. I värsta fall är det ett siteindex, det vill säga en lista med flera sitemaps. Det framgår av innehållet. Om det är "vanliga" webbplatsadresser är det en vanlig sitemap och du kan hoppa till att extrahera adresserna.
