@@ -42,7 +42,10 @@ def httpStatusCodeCheck(url, simulate_404 = False):
 
 		return a.code	# returns the status code for HTTP, 200 for Ok, 404 for Not found, etc
 	except urllib.error.URLError as e:
-		return e.code
+		if hasattr(e, 'code'):
+			return e.code
+		else:
+			return '520'
 	except socket.timeout:
 		return '522'	# not sure which error code to choose, but 520-522 seems reasonable according to https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 	except:
