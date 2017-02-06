@@ -74,4 +74,4 @@ If file is executed on itself then call definition mobileFriendlyCheck()
 """
 if __name__ == '__main__':
 	#mainProcess(maximum_iterations)
-	oneOffProcess('exempelfiler/swe-gov.txt')
+	oneOffProcess('ÄNDRA-MIG.txt')

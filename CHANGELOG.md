@@ -5,4 +5,7 @@ Första kodexempel som skript är Googles test mobile-friendly. Det annonserades
 
 För det mer storskaliga finns under mappen 'exempelfiler' textfiler med adresser. Du som vill förbereda dig kan börja samla på dig URLar på detta vis, en webbsidas adress per rad. Dessa kommer sedan att kunna läsas in och köras en och en mot respektive API.
 
-//Marcus Österberg
+## 0.2 Test av HTTP-status
+Nu innehåller default.py ett test som läser in textfil (en webbadress per rad) och kollar vilken HTTP-status adressen returnerar. Går allt som det ska kommer en '200', saknas sidan ska en '404' anges, eller om domänen saknas kommer '520' eller '522' tillbaka. Svaret skrivs till en kommaseparerad CSV-fil, enkel att läsa in i kalkylprogram.
+
+Denna funktion är användbar för att kolla _långa_ listor av domäner, eller granska att alla inarbetade adresser på en webbplats faktiskt funkar.

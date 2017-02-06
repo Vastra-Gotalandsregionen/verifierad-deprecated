@@ -52,25 +52,21 @@ Denna kod ska du klistra in i nedan moment.
 Förslag på redigeringsprogram är [Sublime Text](https://www.sublimetext.com/3) (Windows, Mac), [Atom](https://atom.io/) (Mac, Linux, Windows) eller [Notepad++](https://notepad-plus-plus.org/) (Windows).
 
 ### Redigera filen *_privatekeys.py*
-I variablen *googlePageSpeedApiKey* (mellan citationstecknen) anger du den kod du fått via Google API Console.
+Om du ska anropa något av Googles APIer (behövs inte för HTTP-testet) behöver du göra en liten justering.  
+I variablen *googlePageSpeedApiKey* eller *googleMobileFriendlyApiKey* (mellan citationstecknen) anger du den kod du fått via Google API Console.
 
-### Redigera filen *checkpagespeed.py*
+### Redigera filen *default.py*
 I slutet på filen hittar du en rad likt nedan:  
-> urlSet = default.processUrlFile('ÄNDRA-MIG.txt', False)
+> oneOffProcess('ÄNDRA-MIG.txt')
 
 La du din fil med adresser i samma mapp som Pythonfilen ändrar du *ÄNDRA-MIG.txt* till filens namn.
-
-En sista eventuell redigering du behöver göra är på sista raden.
-> pagespeed(url, 'TESTETS-NAMN', 'mobile')
-
-Här kan du sätta namnet på testet, men också justera din teststrategi. Antingen väljer du att skriva *mobile* eller *desktop* beroende på om du vill testa med en mobil- eller datorsanvändares behov i första rummet.
 
 ## 6. Köra Python-skriptet
 Kör du Windows och inte är van vid kommandoprompten kan du behöva läsa på lite. Här finns en [nybörjarguide till Windows kommandoprompt](http://www.online-tech-tips.com/computer-tips/how-to-use-dos-command-prompt/). Det du behöver kunna för detta är primärt att navigera mellan olika mappar på din dator.
 
 1. Öppna kommandoprompten (terminalen på Mac/Linux).
 2. Navigera dig fram till mappen där du la Python-filerna från Github.
-3. Kör kommandot "python checkpagespeed.py" fast utan citationstecken och tryck på Enter-tangenten.
+3. Kör kommandot "python default.py" fast utan citationstecken och tryck på Enter-tangenten.
 
 Det som ska hända nu är att det rasslar förbi en massa logginformation där skriptet försöker berätta för dig vad som händer, om skriptet tycker att den lyckas med sina förehavanden eller inte. Förhoppningsvis kommer du hitta en ny fil i mappen du la Python-filerna, det är en så kallad CSV-fil. Det innebär att den innehåller en massa strukturerad information som du kan öppna i ett kalkylprogram eller om du har analysprogram.
 
