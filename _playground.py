@@ -1,30 +1,49 @@
+# coding: utf-8
+import sys
+import json
 from bs4 import BeautifulSoup
-import test
+import helper
+import _privatekeys as privatekeys
 
-def fetchUrlsFromSitemap(url):
-	"""Given a URL of a sitemap or sitemapindex the contained URLs are returned as a set.
-		
-		Attributes: url
+def googlePagespeedCheck(check_url, strategy='mobile'):
+	"""Checks the Pagespeed Insights with Google 
+	In addition to the 'mobile' strategy there is also 'desktop' aimed at the desktop user's preferences
+
+	attributes: check_url, strategy
 	"""
-	found_urls = set()
-	sitemap = test.httpRequestGetContent(url)
 
-	if('<sitemapindex' in str(sitemap)):	# is the sitemap itself an index of sitemaps
-		#foreach sitemap, hämta sitemap, koka ur urlar
-		print("It\'s an index!")
-		soup = BeautifulSoup(sitemap, "html.parser")
+	pagespeedScore = ""
+	check_url = check_url.strip()
+	print('URL to be checked against Google Pagespeed API: {0}'.format(check_url))
+	
+	#urlEncodedURL = parse.quote_plus(check_url)	# making sure no spaces or other weird characters f*cks up the request, such as HTTP 400
+	pagespeed_api_request = 'https://www.googleapis.com/pagespeedonline/v2/runPagespeed?url={}&strategy={}&key={}'.format(check_url, strategy, privatekeys.googlePageSpeedApiKey)
+	print('HTTP request towards GPS API: {}'.format(pagespeed_api_request))
 
-		for url in soup.findAll("loc"):
-			print(url.text)
-	else:
-		soup = BeautifulSoup(sitemap, "html.parser")
+	responsecontents = ""
 
-		for url in soup.findAll("loc"):
-			print(url.text)
+	try:
+		get_content = helper.httpRequestGetContent(pagespeed_api_request)
+		#print(get_content)
+	except:	# breaking and hoping for more luck with the next URL
+		print('Error! Unfortunately the request for URL "{0}" timed out, message:\n{1}'.format(check_url, sys.exc_info()[0]))
+		pass
+	json_content = ''
+	#try:
+	json_content = json.loads(str(get_content))
+		#data  = json.loads(f)
+	#except:	# breaking and hoping for more luck the next iteration
+	#	print('Fudge! An error occured:\n{0}'.format(sys.exc_info()[0]))
+	#	return pagespeedScore
 
-	return found_urls
+	print(json_content['USABILITY'])
+
+googlePagespeedCheck('http://vgregion.se')
 
 
-fetchSitemap('http://webbstrategiforalla.se/page-sitemap.xml')
-#http://webbstrategiforalla.se/page-sitemap.xml
-#http://webbstrategiforalla.se/sitemap.xml
+#f = open('exempelfiler/mobileFriendlyTest.json', 'r').read()
+#print(f)
+
+#array = '{"fruits": ["apple", "banana", "orange"]}'
+#data  = json.loads(f)
+#print(data['mobileFriendliness'])
