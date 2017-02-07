@@ -23,7 +23,8 @@ def mainProcess(maximum_iterations = 200):
 		print('\n========== Iteration {0} =========='.format(iteration_counter))
 		iteration_counter += 1
 
-		test.mobileFriendlyCheck('http://vgregion.se/', privatekeys.googleMobileFriendlyApiKey)
+		test_result = test.mobileFriendlyCheck('http://vgregion.se/', privatekeys.googleMobileFriendlyApiKey)
+		print(test_result)
 		
 		if(iteration_counter >= maximum_iterations):
 			keep_on = False
@@ -32,7 +33,7 @@ def mainProcess(maximum_iterations = 200):
 			print('\n========== Going to sleep for {0} seconds =========='.format(time_to_sleep_in_seconds))
 			sleep(time_to_sleep_in_seconds) #sleeping for n seconds
 
-def oneOffProcess(file):
+def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 	""" Inspects a textfile, assuming there's URLs in there, one URL per line.
 	
 	attributes: file path to open
@@ -42,20 +43,28 @@ def oneOffProcess(file):
 	urlsInTextfile = []
 	iteration_counter = 1
 	keep_on = True;
+	time_to_sleep_in_seconds = 90	# TODO: reda ut varför den inte orkar testa flera på raken, begränsning?
 
 	output_file = ""
 
 	while keep_on:		
-		url = f.readline()
+		url = f.readline().replace('\n', '')
 		mess_to_console = '{0}. {1}'.format(iteration_counter, url)
 		
 		if len(url) < 7:		# break while if line is shorter than seven characters, for instance is http:// or https:// assumed as a prefix
 			keep_on = False
 		elif not url.endswith('.pdf'):
-			status_code = test.httpStatusCodeCheck(url)
-			print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
-
-			output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
+			# depending on which test regime is chosen
+			if test_regime == 'httpStatusCodeCheck':
+				status_code = test.httpStatusCodeCheck(url)
+				print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
+				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
+			elif test_regime == 'mobileFriendlyCheck':
+				print(url)
+				status_message = test.mobileFriendlyCheck(url, privatekeys.googleMobileFriendlyApiKey)
+				print("Mobile-friendliness of URL '{0}' were evaluated as: {1}".format(url, status_message))
+				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_message)
+				sleep(time_to_sleep_in_seconds) #sleeping for n seconds
 
 			urlsInTextfile.append(url)
 			iteration_counter += 1
@@ -63,15 +72,15 @@ def oneOffProcess(file):
 	f.close()
 
 	### Writing the report
-	file_name = 'rapporter/{0}_httpStatusCodeCheck_{1}.csv'.format(str(datetime.today())[:10], helper.getUniqueId())
+	file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], test_regime, helper.getUniqueId())
 	helper.writeFile(file_name, output_file)
 
 	print('The report has now been written to a file named: {0}'.format(file_name))
 
 
 """
-If file is executed on itself then call definition mobileFriendlyCheck()
+If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
 	#mainProcess(maximum_iterations)
-	oneOffProcess('ÄNDRA-MIG.txt')
+	oneOffProcess('exempelfiler/test-urls.txt', 'mobileFriendlyCheck')

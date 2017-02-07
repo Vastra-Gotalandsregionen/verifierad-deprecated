@@ -2,6 +2,7 @@
 import sys
 import socket
 import urllib
+import json
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 import _privatekeys as privatekeys
@@ -23,8 +24,12 @@ def mobileFriendlyCheck(request_url, api_key):
 	    'key': api_key,
 	}
 	data = urllib.parse.urlencode(params).encode("utf-8")
-	content = urllib.request.urlopen(url=service_url, data=data, timeout=90).read()
-	print(content)
+	content = urllib.request.urlopen(url=service_url, data=data, timeout=90).read().decode('utf-8')
+	#display_content = str(content).replace('\\n', '\n')
+	#print(display_content)
+	json_data  = json.loads(content)
+	#print(json_data['mobileFriendliness'])
+	return str(json_data['mobileFriendliness'])
 
 def httpStatusCodeCheck(url, simulate_404 = False):
 	"""Checking for a presumed 404 message
@@ -69,7 +74,7 @@ def httpRequestGetContent(url):
 If file is executed on itself then call definition mobileFriendlyCheck()
 """
 if __name__ == '__main__':
-	print('Initiating definition "httpStatusCodeCheck()"')
+	#print('Initiating definition "httpStatusCodeCheck()"')
 	#print(httpRequestGetContent("http://gp43789435.se"))
-	print(httpStatusCodeCheck("http://www.ersattningsnamnden.se/"))
-	#mobileFriendlyCheck('http://www.varberg.se/byggabomiljo/fastigheterlantmateriochkartor/kartor/saanvanderdudigitalavarbergskartan.4.7b99eb041540f79d87d77155.html', privatekeys.googleMobileFriendlyApiKey)
+	#print(httpStatusCodeCheck("http://www.ersattningsnamnden.se/"))
+	mobileFriendlyCheck('http://www.varberg.se/', privatekeys.googleMobileFriendlyApiKey)
