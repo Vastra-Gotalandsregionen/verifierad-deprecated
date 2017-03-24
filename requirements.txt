@@ -1,0 +1,2 @@
+BeautifulSoup==4.5.3
+#http://docs.python-requests.org/en/master/user/install/

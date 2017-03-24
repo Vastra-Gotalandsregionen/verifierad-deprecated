@@ -56,7 +56,7 @@ def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 		elif not url.endswith('.pdf'):
 			# depending on which test regime is chosen
 			if test_regime == 'httpStatusCodeCheck':
-				status_code = test.httpStatusCodeCheck(url)
+				status_code = test.httpStatusCodeCheck(url, True)
 				print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
 				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
 			elif test_regime == 'mobileFriendlyCheck':
@@ -83,4 +83,4 @@ If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
 	#mainProcess(maximum_iterations)
-	oneOffProcess('exempelfiler/test-urls.txt', 'mobileFriendlyCheck')
+	oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
