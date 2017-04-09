@@ -77,10 +77,33 @@ def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 
 	print('The report has now been written to a file named: {0}'.format(file_name))
 
+def oneOffFromSitemap(url_to_sitemap, check_limit = 50):
+	"""Initially only checks a site against Google Pagespeed API
+	"""
+	urls = set()
+	urls = helper.fetchUrlsFromSitemap(url_to_sitemap)
+	
+	#print(len(urls))
+	i = 1
+	output_file = ''
 
+	for url in urls:
+		if i > check_limit:
+			break
+		check_page = helper.googlePagespeedCheck(url)
+		if bool(check_page):
+			for key in check_page:
+				output_file = output_file + '{0}, {1}, {2}\n'.format(url, key, check_page[key])
+		i = i + 1
+
+	### Writing the report
+	file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], 'google_pagespeed', helper.getUniqueId())
+	helper.writeFile(file_name, output_file)
+	print('Report written to disk at {0}'.format(file_name))
 """
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
 	#mainProcess(maximum_iterations)
-	oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
+	#oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
+	oneOffFromSitemap('http://varberg.se/sitemap.xml', 100)
