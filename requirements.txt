@@ -1,0 +1,6 @@
+BeautifulSoup==4.5.3
+#http://docs.python-requests.org/en/master/user/install/
+schedule==0.4.2
+#https://pypi.python.org/pypi/schedule
+requests==2.13.0
+#http://docs.python-requests.org/en/master/user/install/#install
