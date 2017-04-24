@@ -9,7 +9,7 @@ Det här är ett ganska utvecklarcentrerat projekt. Förhoppningen är att kunna
 ## Vill du bidra?
 Hör av dig till [@marcusosterberg via Twitter](https://twitter.com/marcusosterberg). För närvarande är det Marcus Österberg som kodar och [Mattias Skoog](https://twitter.com/therealskoog) som sköter test av dokumentation. Råkar du vara bra på Python tar vi gärna emot kodgranskning, är du bra på paketering av kod till tjänster behövs även det, kan du grafisk formgivning vore det kul med en logga och klistermärken. Häng på! :)
 
-##Licens
+## Licens
 Projektets innehåll erbjuds med MIT-licens. Det innebär att du vågar använda kod till lite vad du nu vill utan risk för att behöva ha med advokater att göra.
 
 ## Historik
