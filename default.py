@@ -6,12 +6,13 @@
 """
 from time import sleep
 from datetime import datetime
+import sys
 import _privatekeys as privatekeys
 import test
 import helper
 
 ######## set the variables to your chosing
-maximum_iterations = 1 #defaults is 200
+maximum_iterations = 200 #defaults is 200
 
 
 def mainProcess(maximum_iterations = 200):
@@ -77,7 +78,7 @@ def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 
 	print('The report has now been written to a file named: {0}'.format(file_name))
 
-def oneOffFromSitemap(url_to_sitemap, check_limit = 50):
+def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespeed'):
 	"""Initially only checks a site against Google Pagespeed API
 	"""
 	urls = set()
@@ -90,14 +91,18 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50):
 	for url in urls:
 		if i > check_limit:
 			break
-		check_page = helper.googlePagespeedCheck(url)
-		if bool(check_page):
-			for key in check_page:
-				output_file = output_file + '{0}, {1}, {2}\n'.format(url, key, check_page[key])
-		i = i + 1
+		try:
+			check_page = helper.googlePagespeedCheck(url)
+			if bool(check_page):
+				for key in check_page:
+					output_file = output_file + '{0},{1},{2}\n'.format(url, key, check_page[key])
+			i = i + 1
+		except:
+			print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url, sys.exc_info()[0]))
+			pass
 
 	### Writing the report
-	file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], 'google_pagespeed', helper.getUniqueId())
+	file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], naming, helper.getUniqueId())
 	helper.writeFile(file_name, output_file)
 	print('Report written to disk at {0}'.format(file_name))
 """
@@ -106,4 +111,4 @@ If file is executed on itself then call on a definition
 if __name__ == '__main__':
 	#mainProcess(maximum_iterations)
 	#oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
-	oneOffFromSitemap('http://varberg.se/sitemap.xml', 100)
+	oneOffFromSitemap('http://www.sitevision.se/sitemap.xml', 9999, 'sitevision-according-to-google_pagespeed')
