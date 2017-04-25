@@ -4,35 +4,34 @@
 
 	A change-log is kept in the file CHANGELOG.md
 """
-from time import sleep
 from datetime import datetime
 import sys
+import schedule
+import time
 import _privatekeys as privatekeys
 import test
 import helper
 
-######## set the variables to your chosing
-maximum_iterations = 200 #defaults is 200
-
+# local variables
+url_for_mainProcess = 'http://vgregion.se/'
 
 def mainProcess(maximum_iterations = 200):
-	keep_on = True
-	time_to_sleep_in_seconds = 30
-	iteration_counter = 1
+	schedule.every(2).minutes.do(mainProcessJob)
+	#schedule.every().hour.do(job)
+	#schedule.every().day.at("10:30").do(job)
+	#schedule.every().monday.do(job)
+	#schedule.every().wednesday.at("13:15").do(job)
 
-	while (keep_on):
-		print('\n========== Iteration {0} =========='.format(iteration_counter))
-		iteration_counter += 1
-
-		test_result = test.mobileFriendlyCheck('http://vgregion.se/', privatekeys.googleMobileFriendlyApiKey)
-		print(test_result)
-		
+	while True:
+		schedule.run_pending()
+		time.sleep(1)
+		iteration_counter = 1
 		if(iteration_counter >= maximum_iterations):
-			keep_on = False
-			print('\n========== aaaand we\'re finished =========='.format(time_to_sleep_in_seconds))
-		else:
-			print('\n========== Going to sleep for {0} seconds =========='.format(time_to_sleep_in_seconds))
-			sleep(time_to_sleep_in_seconds) #sleeping for n seconds
+			break
+
+def mainProcessJob():
+	test_result = test.mobileFriendlyCheck(url_for_mainProcess, privatekeys.googleMobileFriendlyApiKey)
+	print(test_result)
 
 def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 	""" Inspects a textfile, assuming there's URLs in there, one URL per line.
@@ -78,7 +77,7 @@ def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 
 	print('The report has now been written to a file named: {0}'.format(file_name))
 
-def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespeed'):
+def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespeed', test_regime = 'googlePageSpeed'):
 	"""Initially only checks a site against Google Pagespeed API
 	"""
 	urls = set()
@@ -89,14 +88,26 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 	output_file = ''
 
 	for url in urls:
+		mess_to_console = '{0}. {1}'.format(i, url)
 		if i > check_limit:
 			break
 		try:
-			check_page = helper.googlePagespeedCheck(url)
-			if bool(check_page):
-				for key in check_page:
-					output_file = output_file + '{0},{1},{2}\n'.format(url, key, check_page[key])
-			i = i + 1
+			if test_regime == 'googlePageSpeed':
+				check_page = helper.googlePagespeedCheck(url)
+				if bool(check_page):
+					print('{0} has been checked agains Google Pagespeed API'.format(mess_to_console))
+					for key in check_page:
+						output_file = output_file + '{0},{1},{2}\n'.format(url, key, check_page[key])
+						i = i + 1
+			elif test_regime == 'httpStatusCodeCheck':
+				status_code = test.httpStatusCodeCheck(url, True)
+				print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
+				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
+			elif test_regime == 'mobileFriendlyCheck':
+				print(url)
+				status_message = test.mobileFriendlyCheck(url, privatekeys.googleMobileFriendlyApiKey)
+				print("Mobile-friendliness of URL '{0}' were evaluated as: {1}".format(url, status_message))
+				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_message)
 		except:
 			print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url, sys.exc_info()[0]))
 			pass
@@ -109,6 +120,6 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-	#mainProcess(maximum_iterations)
+	mainProcess(2)
 	#oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
-	oneOffFromSitemap('http://www.sitevision.se/sitemap.xml', 9999, 'sitevision-according-to-google_pagespeed')
+	#oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 2, 'varberg-mobile-friendly', 'mobileFriendlyCheck')
