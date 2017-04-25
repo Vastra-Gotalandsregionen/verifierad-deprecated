@@ -22,10 +22,11 @@ def mainProcess(maximum_iterations = 200):
 	#schedule.every().monday.do(job)
 	#schedule.every().wednesday.at("13:15").do(job)
 
+	iteration_counter = 1
+
 	while True:
 		schedule.run_pending()
 		time.sleep(1)
-		iteration_counter = 1
 		if(iteration_counter >= maximum_iterations):
 			break
 
