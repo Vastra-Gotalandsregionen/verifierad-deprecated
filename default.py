@@ -14,25 +14,34 @@ import helper
 
 # local variables
 url_for_mainProcess = 'http://vgregion.se/'
+i = 1 # global iteration counter
 
-def mainProcess(maximum_iterations = 200):
-	schedule.every(2).minutes.do(mainProcessJob)
-	#schedule.every().hour.do(job)
+def mainProcess(max_iterations=200):
+	schedule.every(15).seconds.do(mainProcessJob)
+	#schedule.every(2).minutes.do(mainProcessJob)
+	#schedule.every().hour.do(jobFetchSitemaps)
 	#schedule.every().day.at("10:30").do(job)
 	#schedule.every().monday.do(job)
 	#schedule.every().wednesday.at("13:15").do(job)
 
-	iteration_counter = 1
+	global i
+	print('Number of planned iterations is {0}'.format(max_iterations))
 
 	while True:
 		schedule.run_pending()
-		time.sleep(1)
-		if(iteration_counter >= maximum_iterations):
-			break
+		time.sleep(15)
+		if(i > max_iterations):
+			return schedule.CancelJob
+		else:
+			print('Going for round {0}'.format(i))
 
 def mainProcessJob():
+	global i
+	#läsa upp ur textfil vad den ska testa härnäst, lista med viktigaste URLar att börja om på nytt med efter ett varv?
 	test_result = test.mobileFriendlyCheck(url_for_mainProcess, privatekeys.googleMobileFriendlyApiKey)
-	print(test_result)
+	print('{0}. The result for URL \'{1}\' is: {2}'.format(i, url_for_mainProcess, test_result))
+	i = i + 1
+	# send email if not mobile friendly?
 
 def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 	""" Inspects a textfile, assuming there's URLs in there, one URL per line.

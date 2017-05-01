@@ -10,13 +10,17 @@ def mobileFriendlyCheck(request_url, api_key):
 
 	attributes: 'request_url' for the URL to test, 'api_key' for the API key credentials fetched at Googles API Console
 	"""
-	payload = {'url': request_url, 'key': api_key}
-	r = requests.post('https://searchconsole.googleapis.com/v1/urlTestingTools/mobileFriendlyTest:run', params=payload)
-	#print(r.text)
-	print(r.url)
-	json_data  = json.loads(r.text.replace('\'', '"'))
-	#print(str(json_data['mobileFriendliness']))
-	return json_data['mobileFriendliness']
+	try:
+		payload = {'url': request_url, 'key': api_key}
+		r = requests.post('https://searchconsole.googleapis.com/v1/urlTestingTools/mobileFriendlyTest:run', params=payload)
+		#print(r.text)
+		#print(r.url)
+		json_data  = json.loads(r.text.replace('\'', '"'))
+		#print(str(json_data['mobileFriendliness']))
+		return json_data['mobileFriendliness']
+	except:
+		print('Error! Failed to request API for {0}'.format(request_url))
+		return
 
 def httpStatusCodeCheck(url, simulate_404 = False, time_out=30.000):
 	"""Checking HTTP status code, or a presumed 404 message
