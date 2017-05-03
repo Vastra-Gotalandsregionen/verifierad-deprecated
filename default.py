@@ -17,7 +17,7 @@ url_for_mainProcess = 'http://vgregion.se/'
 i = 1 # global iteration counter
 
 def mainProcess(max_iterations=200):
-	schedule.every(15).seconds.do(mainProcessJob)
+	schedule.every(25).seconds.do(mainProcessJob)
 	#schedule.every(2).minutes.do(mainProcessJob)
 	#schedule.every().hour.do(jobFetchSitemaps)
 	#schedule.every().day.at("10:30").do(job)
@@ -29,7 +29,7 @@ def mainProcess(max_iterations=200):
 
 	while True:
 		schedule.run_pending()
-		time.sleep(15)
+		time.sleep(25)
 		if(i > max_iterations):
 			return schedule.CancelJob
 		else:
@@ -105,22 +105,26 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 			if test_regime == 'googlePageSpeed':
 				check_page = helper.googlePagespeedCheck(url)
 				if bool(check_page):
-					print('{0} has been checked agains Google Pagespeed API'.format(mess_to_console))
+					print('{0} has been checked against Google Pagespeed API'.format(mess_to_console))
 					for key in check_page:
 						output_file = output_file + '{0},{1},{2}\n'.format(url, key, check_page[key])
-						i = i + 1
+					
+					i = i + 1
 			elif test_regime == 'httpStatusCodeCheck':
 				status_code = test.httpStatusCodeCheck(url, True)
 				print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
 				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
+				i = i + 1
 			elif test_regime == 'mobileFriendlyCheck':
 				print(url)
 				status_message = test.mobileFriendlyCheck(url, privatekeys.googleMobileFriendlyApiKey)
 				print("Mobile-friendliness of URL '{0}' were evaluated as: {1}".format(url, status_message))
 				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_message)
+				i = i + 1
 		except:
 			print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url, sys.exc_info()[0]))
 			pass
+			i = i + 1
 
 	### Writing the report
 	file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], naming, helper.getUniqueId())
@@ -130,6 +134,6 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-	mainProcess(2)
+	#mainProcess(2)
 	#oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
-	#oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 2, 'varberg-mobile-friendly', 'mobileFriendlyCheck')
+	oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 10, 'vgregion-pagespeed', 'googlePageSpeed')
