@@ -72,8 +72,8 @@ def googlePagespeedCheck(check_url, strategy='mobile'):
 	try:
 		json_content = json.loads(get_content)
 	except: #might crash if checked resource is not a webpage
-		print('Error! The URL "{0}" throw an error, message:\n{1}'.format(check_url, sys.exc_info()[0]))
-		return
+		print('Error! JSON failed parsing for the URL "{0}"\nMessage:\n{1}'.format(check_url, sys.exc_info()[0]))
+		pass
 	#except:	# breaking and hoping for more luck the next iteration
 	#	print('Fudge! An error occured:\n{0}'.format(sys.exc_info()[0]))
 	#	return pagespeedScore
@@ -149,7 +149,7 @@ def googlePagespeedCheck(check_url, strategy='mobile'):
 			ruleresults_sizecontenttoviewport = json_content['formattedResults']['ruleResults']['SizeContentToViewport']['ruleImpact']
 			return_dict['ruleresults_sizecontenttoviewport'] = ruleresults_sizecontenttoviewport
 		except:
-			print('Error! Request for URL "{0}" failed in a minor way.\nMessage:\n{1}'.format(url, sys.exc_info()[0]))
+			print('Error! Request for URL "{0}" failed in a minor way.\nMessage:\n{1}'.format(check_url, sys.exc_info()[0]))
 			pass
 
 		#for key in return_dict:
@@ -157,7 +157,7 @@ def googlePagespeedCheck(check_url, strategy='mobile'):
 
 		return return_dict
 	except:
-		print('Error! Request for URL "{0}" failed.\nMessage:\n{1}'.format(url, sys.exc_info()[0]))
+		print('Error! Request for URL "{0}" failed.\nMessage:\n{1}'.format(check_url, sys.exc_info()[0]))
 		pass
 
 def thirdPartiesCheck(url):
