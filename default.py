@@ -103,7 +103,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 			break
 		try:
 			if test_regime == 'googlePageSpeed':
-				check_page = helper.googlePagespeedCheck(url)
+				check_page = test.googlePagespeedCheck(url)
 				if bool(check_page):
 					print('{0} has been checked against Google Pagespeed API'.format(mess_to_console))
 					for key in check_page:
@@ -121,6 +121,12 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 				print("Mobile-friendliness of URL '{0}' were evaluated as: {1}".format(url, status_message))
 				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_message)
 				i = i + 1
+			elif test_regime == 'thirdPartiesCheck':
+				print(url)
+				status_message = test.thirdPartiesCheck(url)
+				print("Third parties of URL '{0}' were evaluated as: {1}".format(url, status_message))
+				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_message)
+				i = i + 1
 		except:
 			print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url, sys.exc_info()[0]))
 			pass
@@ -136,4 +142,5 @@ If file is executed on itself then call on a definition
 if __name__ == '__main__':
 	#mainProcess(2)
 	#oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
-	oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 10, 'vgregion-pagespeed', 'googlePageSpeed')
+	oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 1000, 'vgregion-pagespeed', 'googlePageSpeed')
+
