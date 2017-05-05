@@ -66,7 +66,7 @@ def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 		elif not url.endswith('.pdf'):
 			# depending on which test regime is chosen
 			if test_regime == 'httpStatusCodeCheck':
-				status_code = test.httpStatusCodeCheck(url, True)
+				status_code = test.httpStatusCodeCheck(url, False)
 				print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
 				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
 			elif test_regime == 'mobileFriendlyCheck':
@@ -111,8 +111,8 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 					
 					i = i + 1
 			elif test_regime == 'httpStatusCodeCheck':
-				status_code = test.httpStatusCodeCheck(url, True)
-				print('{0} has a status code: {1}'.format(mess_to_console, status_code).replace('\n', ''))
+				status_code = test.httpStatusCodeCheck(url, False)
+				print('{0} has a status code: {1}'.format(mess_to_console, status_code))
 				output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
 				i = i + 1
 			elif test_regime == 'mobileFriendlyCheck':
@@ -141,6 +141,7 @@ If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
 	#mainProcess(2)
-	#oneOffProcess('exempelfiler/test-urls.txt', 'httpStatusCodeCheck')
-	oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 1000, 'vgregion-pagespeed', 'googlePageSpeed')
+	oneOffProcess('exempelfiler/swe-gov.txt', 'httpStatusCodeCheck')
+	#oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-httpStatusCodeCheck', 'httpStatusCodeCheck')
+	#oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-pagespeed', 'googlePageSpeed')
 

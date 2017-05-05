@@ -3,6 +3,7 @@ import sys
 import requests
 import json
 from bs4 import BeautifulSoup
+import re # för thirdpartiescheck
 import _privatekeys as privatekeys
 import helper
 
@@ -51,7 +52,7 @@ def googlePagespeedCheck(check_url, strategy='mobile'):
 	
 	#urlEncodedURL = parse.quote_plus(check_url)	# making sure no spaces or other weird characters f*cks up the request, such as HTTP 400
 	pagespeed_api_request = 'https://www.googleapis.com/pagespeedonline/v2/runPagespeed?url={}&strategy={}&key={}'.format(check_url, strategy, privatekeys.googlePageSpeedApiKey)
-	print('HTTP request towards GPS API: {}'.format(pagespeed_api_request))
+	#print('HTTP request towards GPS API: {}'.format(pagespeed_api_request))
 
 	responsecontents = ""
 	get_content = ""
@@ -74,87 +75,23 @@ def googlePagespeedCheck(check_url, strategy='mobile'):
 	except: #might crash if checked resource is not a webpage
 		print('Error! JSON failed parsing for the URL "{0}"\nMessage:\n{1}'.format(check_url, sys.exc_info()[0]))
 		pass
-	#except:	# breaking and hoping for more luck the next iteration
-	#	print('Fudge! An error occured:\n{0}'.format(sys.exc_info()[0]))
-	#	return pagespeedScore
+	
 	return_dict = {}
 	try:
-		# TODO: build error-safe
-		pagespeed_score = json_content['ruleGroups']['SPEED']['score']
-		return_dict['pagespeed_score'] = pagespeed_score
-		#print(pagespeed_score)
-		usability_score = json_content['ruleGroups']['USABILITY']['score']
-		return_dict['usability_score'] = usability_score
-		#print(usability_score)
+		# overall score
+		for key in json_content['ruleGroups'].keys():
+			#print('Key: {0}, value {1}'.format(key, json_content['ruleGroups'][key]['score']))
+			return_dict[key] = json_content['ruleGroups'][key]['score']
 
-		### the web page's stats
-		try:
-			stats_numberresources = json_content['pageStats']['numberResources']
-			return_dict['stats_numberresources'] = stats_numberresources
-			stats_numberresources = json_content['pageStats']['numberResources']
-			return_dict['stats_numberresources'] = stats_numberresources
-			stats_numberhosts = json_content['pageStats']['numberHosts']
-			return_dict['stats_numberhosts'] = stats_numberhosts
-			stats_totalrequestbytes = json_content['pageStats']['totalRequestBytes']
-			return_dict['stats_totalrequestbytes'] = stats_totalrequestbytes
-			stats_numberstaticresources = json_content['pageStats']['numberStaticResources']
-			return_dict['stats_numberstaticresources'] = stats_numberstaticresources
-			stats_htmlresponsebytes = json_content['pageStats']['htmlResponseBytes']
-			return_dict['stats_htmlresponsebytes'] = stats_htmlresponsebytes
-			stats_cssresponsebytes = json_content['pageStats']['cssResponseBytes']
-			return_dict['stats_cssresponsebytes'] = stats_cssresponsebytes
-			stats_imageresponsebytes = json_content['pageStats']['imageResponseBytes']
-			return_dict['stats_imageresponsebytes'] = stats_imageresponsebytes
-			stats_javascriptresponsebytes = json_content['pageStats']['javascriptResponseBytes']
-			return_dict['stats_javascriptresponsebytes'] = stats_javascriptresponsebytes
-			stats_otherresponsebytes = json_content['pageStats']['otherResponseBytes']
-			return_dict['stats_otherresponsebytes'] = stats_otherresponsebytes
-			stats_numberjsresources = json_content['pageStats']['numberJsResources']
-			return_dict['stats_numberjsresources'] = stats_numberjsresources
-			stats_numbercssresources = json_content['pageStats']['numberCssResources']
-			return_dict['stats_numbercssresources'] = stats_numbercssresources
+		# page statistics
+		for key in json_content['pageStats'].keys():
+			#print('Key: {0}, value {1}'.format(key, json_content['pageStats'][key]))
+			return_dict[key] = json_content['pageStats'][key]
 
-			### rule results
-			# TODO: not all ruleresults are present on all webpages, 'AvoidInterstitials' for instance
-			ruleresults_avoidlandingpageredirects = json_content['formattedResults']['ruleResults']['AvoidLandingPageRedirects']['ruleImpact']
-			return_dict['ruleresults_avoidlandingpageredirects'] = ruleresults_avoidlandingpageredirects
-			ruleresults_minifycss = json_content['formattedResults']['ruleResults']['MinifyCss']['ruleImpact']
-			return_dict['ruleresults_minifycss'] = ruleresults_minifycss
-			ruleresults_optimizeimages = json_content['formattedResults']['ruleResults']['OptimizeImages']['ruleImpact']
-			return_dict['ruleresults_optimizeimages'] = ruleresults_optimizeimages
-			ruleresults_avoidplugins = json_content['formattedResults']['ruleResults']['AvoidPlugins']['ruleImpact']
-			return_dict['ruleresults_avoidplugins'] = ruleresults_avoidplugins
-			ruleresults_leveragebrowsercaching = json_content['formattedResults']['ruleResults']['LeverageBrowserCaching']['ruleImpact']
-			return_dict['ruleresults_leveragebrowsercaching'] = ruleresults_leveragebrowsercaching
-			ruleresults_prioritizevisiblecontent = json_content['formattedResults']['ruleResults']['PrioritizeVisibleContent']['ruleImpact']
-			return_dict['ruleresults_prioritizevisiblecontent'] = ruleresults_prioritizevisiblecontent
-			ruleresults_enablegzipcompression = json_content['formattedResults']['ruleResults']['EnableGzipCompression']['ruleImpact']
-			return_dict['ruleresults_enablegzipcompression'] = ruleresults_enablegzipcompression
-			#ruleresults_avoidinterstitials = json_content['formattedResults']['ruleResults']['AvoidInterstitials']['ruleImpact']
-			#return_dict['ruleresults_avoidinterstitials'] = ruleresults_avoidinterstitials
-			ruleresults_configureviewport = json_content['formattedResults']['ruleResults']['ConfigureViewport']['ruleImpact']
-			return_dict['ruleresults_configureviewport'] = ruleresults_configureviewport
-			ruleresults_uselegiblefontsizes = json_content['formattedResults']['ruleResults']['UseLegibleFontSizes']['ruleImpact']
-			return_dict['ruleresults_uselegiblefontsizes'] = ruleresults_uselegiblefontsizes
-			ruleresults_minimizerenderblockingresources = json_content['formattedResults']['ruleResults']['MinimizeRenderBlockingResources']['ruleImpact']
-			return_dict['ruleresults_minimizerenderblockingresources'] = ruleresults_minimizerenderblockingresources
-			ruleresults_minifyjavascript = json_content['formattedResults']['ruleResults']['MinifyJavaScript']['ruleImpact']
-			return_dict['ruleresults_minifyjavascript'] = ruleresults_minifyjavascript
-			ruleresults_mainresourceserverresponsetime = json_content['formattedResults']['ruleResults']['MainResourceServerResponseTime']['ruleImpact']
-			return_dict['ruleresults_mainresourceserverresponsetime'] = ruleresults_mainresourceserverresponsetime
-			ruleresults_sizetaptargetsappropriately = json_content['formattedResults']['ruleResults']['SizeTapTargetsAppropriately']['ruleImpact']
-			return_dict['ruleresults_sizetaptargetsappropriately'] = ruleresults_sizetaptargetsappropriately
-			ruleresults_minifyhtml = json_content['formattedResults']['ruleResults']['MinifyHTML']['ruleImpact']
-			return_dict['ruleresults_minifyhtml'] = ruleresults_minifyhtml
-			ruleresults_sizecontenttoviewport = json_content['formattedResults']['ruleResults']['SizeContentToViewport']['ruleImpact']
-			return_dict['ruleresults_sizecontenttoviewport'] = ruleresults_sizecontenttoviewport
-		except:
-			print('Error! Request for URL "{0}" failed in a minor way.\nMessage:\n{1}'.format(check_url, sys.exc_info()[0]))
-			pass
-
-		#for key in return_dict:
-		#	print(key, ' corresponds to ', return_dict[key])
-
+		# page potential
+		for key in json_content['formattedResults']['ruleResults'].keys():
+			#print('Key: {0}, value {1}'.format(key, json_content['formattedResults']['ruleResults'][key]['ruleImpact']))
+			return_dict[key] = json_content['formattedResults']['ruleResults'][key]['ruleImpact']		
 		return return_dict
 	except:
 		print('Error! Request for URL "{0}" failed.\nMessage:\n{1}'.format(check_url, sys.exc_info()[0]))
@@ -165,13 +102,47 @@ def thirdPartiesCheck(url):
 
 	Attributes: string url
 	"""
+	get_content = helper.httpRequestGetContent(url)
+	get_content = BeautifulSoup(get_content, "html.parser")
+
+	#for child in get_content.head.children:
+	#	try:
+	#		print(child.meta)
+	#	except:
+	#		print(child.string)
+
+	# scripts, iframes, images - (but not those that compile their requests with Javascript)
+	#for findings in get_content.findAll(src=re.compile('//')):
+	#	print(findings)
+
+	# soup.find_all(string="googletagmanager.com")
+
+	# css
+	#for findings in get_content.findAll(["link", "script", "style", "iframe", "img"]):
+	#	if findings.attribute findings.has_attr('href') or findings.has_attr('src'):
+	#		print(findings)
 	
+	for findings in get_content.select('img[src*="//"]'):
+		print(findings)
+
+	for findings in get_content.select('iframe[src*="//"]'):
+		print(findings)
+	for findings in get_content.select('link[href*="//"]'):
+		print(findings)
+	for findings in get_content.select('script[src*="//"]'):
+		print(findings)
+	for findings in get_content.select('script[src*="//"]'):
+		print(findings)
+	#komplettera med the usual suspects? Som '//ajax.googleapis.com/' i fritext?
+	#inbäddade kartor, videoklipp, teckensnitt?
+
 
 """
 If file is executed for itself
 """
 if __name__ == '__main__':
-	#print(httpStatusCodeCheck('http://vgregion.se', True))
+	#print(httpStatusCodeCheck('http://vgregion.se'))
 	#print(mobileFriendlyCheck('http://vgregion.se/', privatekeys.googleMobileFriendlyApiKey))
-	print(googlePagespeedCheck('http://varberg.se'))
+	#print(googlePagespeedCheck('http://varberg.se'))
+	thirdPartiesCheck('http://sahlgrenska.se')
 
