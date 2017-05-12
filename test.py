@@ -41,6 +41,19 @@ def httpStatusCodeCheck(url, simulate_404 = False, time_out=30.000):
 	except:	# not sure which error code to choose, but 520-522 seems reasonable according to https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 		return '520'
 
+def checkForFiles(url, file = "robots.txt"):
+	""" Used to check a domain for interesting default files
+
+	Attributes: string url, string file
+	"""
+	# interesting files are robots.txt, humans.txt, sitemap.xml
+	return_dict = {}
+
+	url = '{0}/{1}'.format(url, file)
+	return_dict[url] = httpStatusCodeCheck(url)
+
+	return return_dict
+
 def googlePagespeedCheck(check_url, strategy='mobile'):
 	"""Checks the Pagespeed Insights with Google 
 	In addition to the 'mobile' strategy there is also 'desktop' aimed at the desktop user's preferences
@@ -104,23 +117,6 @@ def thirdPartiesCheck(url):
 	"""
 	get_content = helper.httpRequestGetContent(url)
 	get_content = BeautifulSoup(get_content, "html.parser")
-
-	#for child in get_content.head.children:
-	#	try:
-	#		print(child.meta)
-	#	except:
-	#		print(child.string)
-
-	# scripts, iframes, images - (but not those that compile their requests with Javascript)
-	#for findings in get_content.findAll(src=re.compile('//')):
-	#	print(findings)
-
-	# soup.find_all(string="googletagmanager.com")
-
-	# css
-	#for findings in get_content.findAll(["link", "script", "style", "iframe", "img"]):
-	#	if findings.attribute findings.has_attr('href') or findings.has_attr('src'):
-	#		print(findings)
 	
 	for findings in get_content.select('img[src*="//"]'):
 		print(findings)
@@ -143,6 +139,6 @@ If file is executed for itself
 if __name__ == '__main__':
 	#print(httpStatusCodeCheck('http://vgregion.se'))
 	#print(mobileFriendlyCheck('http://vgregion.se/', privatekeys.googleMobileFriendlyApiKey))
-	#print(googlePagespeedCheck('http://varberg.se'))
-	thirdPartiesCheck('http://sahlgrenska.se')
+	print(googlePagespeedCheck('http://varberg.se'))
+	#thirdPartiesCheck('http://sahlgrenska.se')
 
