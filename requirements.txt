@@ -1,8 +1,8 @@
 BeautifulSoup==4.5.3
 #http://docs.python-requests.org/en/master/user/install/
-schedule==0.4.2
-#https://schedule.readthedocs.io/en/stable/
 requests==2.13.0
 #http://docs.python-requests.org/en/master/user/install/#install
+python-dateutil==2.6.0
+#https://dateutil.readthedocs.io/en/stable/
 python-twitter==3.2.1
 #https://python-twitter.readthedocs.io/en/latest/

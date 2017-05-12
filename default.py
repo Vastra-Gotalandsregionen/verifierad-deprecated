@@ -6,42 +6,14 @@
 """
 from datetime import datetime
 import sys
-import schedule
 import time
 import _privatekeys as privatekeys
 import test
 import helper
 
 # local variables
-url_for_mainProcess = 'http://vgregion.se/'
+#url_for_mainProcess = 'http://vgregion.se/'
 i = 1 # global iteration counter
-
-def mainProcess(max_iterations=200):
-	schedule.every(25).seconds.do(mainProcessJob)
-	#schedule.every(2).minutes.do(mainProcessJob)
-	#schedule.every().hour.do(jobFetchSitemaps)
-	#schedule.every().day.at("10:30").do(job)
-	#schedule.every().monday.do(job)
-	#schedule.every().wednesday.at("13:15").do(job)
-
-	global i
-	print('Number of planned iterations is {0}'.format(max_iterations))
-
-	while True:
-		schedule.run_pending()
-		time.sleep(25)
-		if(i > max_iterations):
-			return schedule.CancelJob
-		else:
-			print('Going for round {0}'.format(i))
-
-def mainProcessJob():
-	global i
-	#läsa upp ur textfil vad den ska testa härnäst, lista med viktigaste URLar att börja om på nytt med efter ett varv?
-	test_result = test.mobileFriendlyCheck(url_for_mainProcess, privatekeys.googleMobileFriendlyApiKey)
-	print('{0}. The result for URL \'{1}\' is: {2}'.format(i, url_for_mainProcess, test_result))
-	i = i + 1
-	# send email if not mobile friendly?
 
 def oneOffProcess(file, test_regime = 'httpStatusCodeCheck'):
 	""" Inspects a textfile, assuming there's URLs in there, one URL per line.
@@ -91,7 +63,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 	"""Initially only checks a site against Google Pagespeed API
 	"""
 	urls = set()
-	urls = helper.fetchUrlsFromSitemap(url_to_sitemap)
+	urls = helper.fetchUrlsFromSitemap(url_to_sitemap).values()
 	
 	#print(len(urls))
 	i = 1
@@ -136,12 +108,26 @@ def oneOffFromSitemap(url_to_sitemap, check_limit = 50, naming = 'google_pagespe
 	file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], naming, helper.getUniqueId())
 	helper.writeFile(file_name, output_file)
 	print('Report written to disk at {0}'.format(file_name))
+
+# supposed to support scheduling from bash-scripts or hosts such as PythonAnywhere
+def checkSitemapsForNewUrls(file):
+	""" Checking a list of predefined sitemaps for new or updated URLs
+	
+	Attributes: string file (for the file location on disk)
+	"""
+	#iterera runt de URLar som finns och anropa sitemaps
+	#kolla om det finns material som är mindre än 14 dagar gammalt (i slutändan kör man denna dagligen per sajt, typ)
+
+	# bygga ett register över URLars ålder
+
+	# om ny URL hittas så läggs den i en textfil som kollas på i slutet av exekveringen
+
 """
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
 	#mainProcess(2)
-	oneOffProcess('exempelfiler/swe-gov.txt', 'httpStatusCodeCheck')
+	#oneOffProcess('exempelfiler/swe-gov.txt', 'httpStatusCodeCheck')
 	#oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-httpStatusCodeCheck', 'httpStatusCodeCheck')
-	#oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-pagespeed', 'googlePageSpeed')
+	oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 10, 'pagespeed', 'googlePageSpeed')
 

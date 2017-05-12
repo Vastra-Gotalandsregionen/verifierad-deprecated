@@ -4,14 +4,23 @@
 import sys
 import os.path
 import uuid
+import dateutil.parser
+import datetime
 from bs4 import BeautifulSoup
 import gzip
 import requests
 import json
+from itertools import islice
 #internal
 import _privatekeys as privatekeys
 
+i = 0	# global iterator
+
 def writeFile(file, content):
+	"""Writes a file at given location
+
+	Attributes: file for location, content for the file's contents
+	""" 
 	f = open(file, 'w')
 	f.write(content)
 
@@ -21,41 +30,61 @@ def writeFile(file, content):
 def getUniqueId(length = 5):
 	return str(uuid.uuid1()).replace('-', '')[:length]
 
-def fetchUrlsFromSitemap(url):
-	"""Given a URL of a sitemap or sitemapindex the contained URLs are returned as a set.
+def getKey(item):
+    return item[0]
+
+def fetchUrlsFromSitemap(url, limit = None):
+	"""Given a URL of a sitemap or sitemapindex the contained URLs are returned as a list with tuples. Optional to limit the age of URLs.
 		
-		Attributes: url
+		Attributes: url (string), limit (datetime)
 	"""
 	# Documentation for sitemaps - https://www.sitemaps.org
-	found_urls = set()
+	found_urls = list()
 	sitemap = httpRequestGetContent(url)
+	global i
+	if limit is not None:
+		limit = dateutil.parser.parse(limit)	# converts to same format
 
 	if('<sitemapindex' in str(sitemap)):	# is the sitemap itself an index of sitemaps
 		sitemap_content = BeautifulSoup(sitemap, "html.parser")
 		for url in sitemap_content.findAll("loc"):
-			print("Sitemap found. Including URL:s from sitemap: '{0}'".format(url.text))
+			print("Siteindex found. Including URL:s from sitemap: '{0}'".format(url.text))
 
 			# fetching sitemap
 			sitemap_from_index = httpRequestGetContent(url.text)
 			sitemap_iteration = BeautifulSoup(sitemap_from_index, "html.parser")
 
-			for lvl1_url in sitemap_iteration.findAll("loc"):
-				#print(lvl1_url.text)
-				#extension = os.path.splitext(filename)[1]
+			for lvl1_url in sitemap_iteration.findAll("url"):
 				if (".pdf" not in lvl1_url.text.lower()) and (".jpg" not in lvl1_url.text.lower()) and (".mp4" not in lvl1_url.text.lower()) and (".mp3" not in lvl1_url.text.lower()) and (".txt" not in lvl1_url.text.lower()) and (".png" not in lvl1_url.text.lower()) and (".gif" not in lvl1_url.text.lower()) and (".svg" not in lvl1_url.text.lower()) and (".eps" not in lvl1_url.text.lower()) and (".doc" not in lvl1_url.text.lower()) and (".docx" not in lvl1_url.text.lower()) and (".xls" not in lvl1_url.text.lower()) and (".js" not in lvl1_url.text.lower()) and (".css" not in lvl1_url.text.lower()) and (".xlsx" not in lvl1_url.text.lower()) and (".ttf" not in lvl1_url.text.lower()) and (".eot" not in lvl1_url.text.lower()) and (".bak" not in lvl1_url.text.lower()) and (".woff" not in lvl1_url.text.lower()):
-					found_urls.add(lvl1_url.text)
+					date = dateutil.parser.parse(url.lastmod.string)
+					if limit is not None and date > limit:
+						date_and_url = (lvl1_url.lastmod.string, lvl1_url.loc.string)
+						found_urls.append(date_and_url)
+
 		print('Found {0} URLs from multiple sitemaps in the siteindex you provided.'.format(len(found_urls)))
-		return found_urls
+		#return found_urls_dict
 	else:
 		soup = BeautifulSoup(sitemap, "html.parser")
 
-		for url in soup.findAll("loc"):
-			#print(url.text)
-			if (".pdf" not in url.text.lower()) and (".jpg" not in url.text.lower()) and (".png" not in url.text.lower()) and (".gif" not in url.text.lower()) and (".eps" not in url.text.lower()) and (".svg" not in url.text.lower()) and (".js" not in url.text.lower()) and (".css" not in url.text.lower()) and (".ttf" not in url.text.lower()) and (".txt" not in url.text.lower()) and (".bak" not in url.text.lower()) and (".mp4" not in url.text.lower()) and (".mp3" not in url.text.lower()) and (".woff" not in url.text.lower()):
-				found_urls.add(url.text)
+		for url in soup.findAll("url"):
+			date = dateutil.parser.parse(url.lastmod.string)
+			if limit is not None and date > limit:
+				date_and_url = (url.lastmod.string, url.loc.string)
+				found_urls.append(date_and_url)
+				#print('Made it: {0}'.format(date))
 
 	print('Found {0} URLs in the sitemap you provided.'.format(len(found_urls)))
-	return found_urls
+	
+	#found_urls.sort()
+	#found_urls.sort(key=lambda tup: tup[1])
+	#ordered = collections.OrderedDict(reversed(sorted(found_urls_dict.items())))
+	#if limit is None:
+	return sorted(found_urls, key=getKey, reverse=True)
+	#else:
+		#sliced = islice(ordered.items(), limit)  # o.iteritems() is o.items() in Python 3
+		#print(len(sliced.items()))
+		#return sorted(found_urls, key=getKey, reverse=True)[limit:0]
+		#sliced_o = OrderedDict(sliced)
 
 def getGzipedContentFromUrl(url):
 	"""
@@ -90,10 +119,25 @@ def httpRequestGetContent(url):
 		print('Error! Unfortunately the request for URL "{0}" either timed out or failed for other reason(s). The timeout is set to {1} seconds.\nMessage:\n{2}'.format(url, timeout_in_seconds, sys.exc_info()[0]))
 		pass
 
+def isSitemap(content):
+	"""Check a string to see if it is a sitemap/siteindex
+
+	Attributes: content
+	"""
+	
+
+	return False
+
 """
 If file is executed on itself then call a definition, mostly for testing purposes
 """
 if __name__ == '__main__':
 	#fetchUrlsFromSitemap('http://webbstrategiforalla.se/sitemap.xml')
-	#fetchUrlsFromSitemap('https://www.varberg.se/sitemap.xml')
-	httpRequestGetContent('http://vgregion.se')
+	tmp = fetchUrlsFromSitemap('http://www.vgregion.se/sitemap.xml', '2017-05-01T13:57:44+01:00')
+	print(len(tmp))
+
+	for bla in tmp:
+		print('{0} lastmod for {1}'.format(bla[0], bla[1]))
+		#print('Tjo')
+
+	#httpRequestGetContent('http://vgregion.se')
