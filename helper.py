@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 import gzip
 import requests
 import json
-from itertools import islice
 #internal
 import _privatekeys as privatekeys
 
@@ -55,37 +54,30 @@ def fetchUrlsFromSitemap(url, limit = None):
 			sitemap_iteration = BeautifulSoup(sitemap_from_index, "html.parser")
 
 			for lvl1_url in sitemap_iteration.findAll("url"):
+				date = None	
 				if (".pdf" not in lvl1_url.text.lower()) and (".jpg" not in lvl1_url.text.lower()) and (".mp4" not in lvl1_url.text.lower()) and (".mp3" not in lvl1_url.text.lower()) and (".txt" not in lvl1_url.text.lower()) and (".png" not in lvl1_url.text.lower()) and (".gif" not in lvl1_url.text.lower()) and (".svg" not in lvl1_url.text.lower()) and (".eps" not in lvl1_url.text.lower()) and (".doc" not in lvl1_url.text.lower()) and (".docx" not in lvl1_url.text.lower()) and (".xls" not in lvl1_url.text.lower()) and (".js" not in lvl1_url.text.lower()) and (".css" not in lvl1_url.text.lower()) and (".xlsx" not in lvl1_url.text.lower()) and (".ttf" not in lvl1_url.text.lower()) and (".eot" not in lvl1_url.text.lower()) and (".bak" not in lvl1_url.text.lower()) and (".woff" not in lvl1_url.text.lower()):
-					date = dateutil.parser.parse(url.lastmod.string)
-					if limit is not None and date > limit:
+					if lvl1_url.lastmod is not None:
+						date = dateutil.parser.parse(lvl1_url.lastmod.string)
+					if limit is not None and date is not None and date > limit:
 						date_and_url = (lvl1_url.lastmod.string, lvl1_url.loc.string)
-						found_urls.append(date_and_url)
+						found_urls.append(date_and_url)	# if date (lastmod) is missing the URL will not be checked
 
 		print('Found {0} URLs from multiple sitemaps in the siteindex you provided.'.format(len(found_urls)))
-		#return found_urls_dict
+		return sorted(found_urls, key=getKey, reverse=True)
 	else:
 		soup = BeautifulSoup(sitemap, "html.parser")
 
 		for url in soup.findAll("url"):
-			date = dateutil.parser.parse(url.lastmod.string)
-			if limit is not None and date > limit:
+			date = None
+			if url.lastmod is not None:
+				date = dateutil.parser.parse(url.lastmod.string)
+			if limit is not None and date is not None and date > limit:
 				date_and_url = (url.lastmod.string, url.loc.string)
-				found_urls.append(date_and_url)
-				#print('Made it: {0}'.format(date))
+				found_urls.append(date_and_url)	# if date (lastmod) is missing the URL will not be checked
 
 	print('Found {0} URLs in the sitemap you provided.'.format(len(found_urls)))
-	
-	#found_urls.sort()
-	#found_urls.sort(key=lambda tup: tup[1])
-	#ordered = collections.OrderedDict(reversed(sorted(found_urls_dict.items())))
-	#if limit is None:
 	return sorted(found_urls, key=getKey, reverse=True)
-	#else:
-		#sliced = islice(ordered.items(), limit)  # o.iteritems() is o.items() in Python 3
-		#print(len(sliced.items()))
-		#return sorted(found_urls, key=getKey, reverse=True)[limit:0]
-		#sliced_o = OrderedDict(sliced)
-
+	
 def getGzipedContentFromUrl(url):
 	"""
 	Fetching a gziped file from Internet, unpacks it and returns its contents.
@@ -133,7 +125,7 @@ If file is executed on itself then call a definition, mostly for testing purpose
 """
 if __name__ == '__main__':
 	#fetchUrlsFromSitemap('http://webbstrategiforalla.se/sitemap.xml')
-	tmp = fetchUrlsFromSitemap('http://www.vgregion.se/sitemap.xml', '2017-05-01T13:57:44+01:00')
+	tmp = fetchUrlsFromSitemap('http://www.varberg.se/sitemap.xml', '2017-02-17T06:19:00+01:00')
 	print(len(tmp))
 
 	for bla in tmp:
