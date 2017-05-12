@@ -1,4 +1,4 @@
-BeautifulSoup==4.5.3
+BeautifulSoup4==4.5.3
 #http://docs.python-requests.org/en/master/user/install/
 requests==2.13.0
 #http://docs.python-requests.org/en/master/user/install/#install
