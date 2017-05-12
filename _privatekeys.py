@@ -2,6 +2,11 @@
 googlePageSpeedApiKey = "CHANGE-ME"
 googleMobileFriendlyApiKey = "CHANGE-ME"
 
+twitterConsumerKey = "CHANGE-ME"
+twitterConsumerSecret = "CHANGE-ME"
+twitterAccessToken = "CHANGE-ME"
+twitterAccessTokenSecret = "CHANGE-ME"
+
 #mySqlServer = ""
 #mySqlDbName = ""
 #mySqlUid = ""
