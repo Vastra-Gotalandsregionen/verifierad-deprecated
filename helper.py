@@ -45,7 +45,7 @@ def fetchUrlsFromSitemap(url, limit=None):
     sitemap = httpRequestGetContent(url)
     global i
     if limit is not None:
-        limit = dateutil.parser.parse(limit)  # converts to same format
+        limit = dateutil.parser.parse(limit).replace(tzinfo=None)  # converts to same format
 
     if ('<sitemapindex' in str(sitemap)):  # is the sitemap itself an index of sitemaps
         sitemap_content = BeautifulSoup(sitemap, "html.parser")
@@ -78,7 +78,7 @@ def fetchUrlsFromSitemap(url, limit=None):
                     ".bak" not in lvl1_url.text.lower()) and (
                     ".woff" not in lvl1_url.text.lower()):
                     if lvl1_url.lastmod is not None:
-                        date = dateutil.parser.parse(lvl1_url.lastmod.string)
+                        date = dateutil.parser.parse(lvl1_url.lastmod.string).replace(tzinfo=None)
                     if limit is not None and date is not None and date > limit:
                         date_and_url = (lvl1_url.lastmod.string, lvl1_url.loc.string)
                         found_urls.append(
@@ -94,7 +94,7 @@ def fetchUrlsFromSitemap(url, limit=None):
         for url in soup.findAll("url"):
             date = None
             if url.lastmod is not None:
-                date = dateutil.parser.parse(url.lastmod.string)
+                date = dateutil.parser.parse(url.lastmod.string).replace(tzinfo=None)
             if limit is not None and date is not None and date > limit:
                 date_and_url = (url.lastmod.string, url.loc.string)
                 found_urls.append(
