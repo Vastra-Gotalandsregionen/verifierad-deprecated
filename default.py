@@ -72,10 +72,8 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
                       test_regime='googlePageSpeed'):
     """Initially only checks a site against Google Pagespeed API
     """
-    # urls = set()
     urls = helper.fetchUrlsFromSitemap(url_to_sitemap, date_limit)
 
-    # print(len(urls))
     i = 1
     output_file = ''
 
@@ -137,7 +135,14 @@ def checkSitemapsForNewUrls(file):
     
     Attributes: string file (for the file location on disk)
     """
+    f = open(file, 'r')
 
+    for line in f:
+        sitemap = line.replace('\n', '')
+        sitemap_friendly_name = sitemap.replace('http://', '').replace('https://', '').replace('/', '-')
+        print('\nInitiating check of sitemap: {0}'.format(sitemap))
+        oneOffFromSitemap(sitemap, 20,
+                      '2017-02-17T06:19:00+01:00', 'pagespeed-{0}'.format(sitemap_friendly_name), 'googlePageSpeed')
 
 # iterera runt de URLar som finns och anropa sitemaps
 # kolla om det finns material som är mindre än 14 dagar gammalt (i slutändan kör man denna dagligen per sajt, typ)
@@ -154,3 +159,4 @@ if __name__ == '__main__':
     # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-httpStatusCodeCheck', 'httpStatusCodeCheck')
     oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 10,
                       '2017-02-17T06:19:00+01:00', 'pagespeed', 'googlePageSpeed')
+    #checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
