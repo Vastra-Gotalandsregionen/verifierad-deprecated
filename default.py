@@ -1,13 +1,16 @@
 # coding: utf-8
-""" This file is the starting-point for the script(s).
-	Documentation is currently only available in Swedish. Located at http://verifierad.nu - which redirects to a Github repository.
+"""
+This file is the starting-point for the script(s).
+Documentation is currently only available in Swedish at http://verifierad.nu
+- which redirects to the official Github repository.
 
-	A change-log is kept in the file CHANGELOG.md
+A change-log is kept in the file CHANGELOG.md
 """
 from datetime import datetime
 import sys
 import time
 import _privatekeys as privatekeys
+import checks.google_pagespeed
 import test
 import helper
 
@@ -17,7 +20,8 @@ i = 1  # global iteration counter
 
 
 def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
-    """ Inspects a textfile, assuming there's URLs in there, one URL per line.
+    """
+    Inspects a textfile, assuming there's URLs in there, one URL per line.
     
     attributes: file path to open
     """
@@ -83,7 +87,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
             break
         try:
             if test_regime == 'googlePageSpeed':
-                check_page = test.googlePagespeedCheck(url[1])
+                check_page = checks.google_pagespeed.googlePagespeedCheck(url[1])
                 if bool(check_page):
                     print('{0} has been checked against Google Pagespeed API'.format(
                         mess_to_console))
@@ -122,7 +126,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
             pass
             i = i + 1
 
-    ### Writing the report
+    # Writing the report
     file_name = 'rapporter/{0}_{1}_{2}.csv'.format(str(datetime.today())[:10], naming,
                                                    helper.getUniqueId())
     helper.writeFile(file_name, output_file)
@@ -131,7 +135,8 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
 
 # supposed to support scheduling from bash-scripts or hosts such as PythonAnywhere
 def checkSitemapsForNewUrls(file):
-    """ Checking a list of predefined sitemaps for new or updated URLs
+    """
+    Checking a list of predefined sitemaps for new or updated URLs
     
     Attributes: string file (for the file location on disk)
     """
@@ -155,8 +160,8 @@ def checkSitemapsForNewUrls(file):
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-    # oneOffProcess('exempelfiler/swe-gov.txt', 'httpStatusCodeCheck')
+    oneOffProcess('exempelfiler/swe-gov.txt', 'httpStatusCodeCheck')
     # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-httpStatusCodeCheck', 'httpStatusCodeCheck')
-    oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 10,
-                      '2017-02-17T06:19:00+01:00', 'pagespeed', 'googlePageSpeed')
-    #checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
+    # oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 10,
+    #                  '2017-02-17T06:19:00+01:00', 'pagespeed', 'googlePageSpeed')
+    # checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
