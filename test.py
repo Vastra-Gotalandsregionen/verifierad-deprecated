@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import helper
-from checks.google_pagespeed import googlePagespeedCheck
+from checks.google_pagespeed import google_pagespeed_check
 
 
 def mobileFriendlyCheck(request_url, api_key):
@@ -91,7 +91,7 @@ If file is executed for itself
 if __name__ == '__main__':
     # print(httpStatusCodeCheck('http://vgregion.se'))
     # print(mobileFriendlyCheck('http://vgregion.se/', privatekeys.googleMobileFriendlyApiKey))
-    result = googlePagespeedCheck('http://varberg.se')
+    result = google_pagespeed_check('http://varberg.se')
     # thirdPartiesCheck('http://sahlgrenska.se')
 
     for key, value in result.items():

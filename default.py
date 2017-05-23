@@ -9,10 +9,11 @@ A change-log is kept in the file CHANGELOG.md
 from datetime import datetime
 import sys
 import time
+
 import _privatekeys as privatekeys
-import checks.google_pagespeed
 import test
 import helper
+from checks.google_pagespeed import google_pagespeed_check
 
 # local variables
 # url_for_mainProcess = 'http://vgregion.se/'
@@ -87,7 +88,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
             break
         try:
             if test_regime == 'googlePageSpeed':
-                check_page = checks.google_pagespeed.googlePagespeedCheck(url[1])
+                check_page = google_pagespeed_check(url[1])
                 if bool(check_page):
                     print('{0} has been checked against Google Pagespeed API'.format(
                         mess_to_console))

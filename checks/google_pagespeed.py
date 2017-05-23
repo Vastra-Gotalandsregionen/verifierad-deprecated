@@ -1,3 +1,12 @@
+"""Google PageSpeed
+
+This check uses the Google PageSpeed API to run various test to collect metrics for how
+a website is performing.
+
+Official page: https://developers.google.com/speed/pagespeed/
+
+API key required.
+"""
 import json
 import sys
 
@@ -7,7 +16,7 @@ import _privatekeys as privatekeys
 import helper
 
 
-def googlePagespeedCheck(check_url, strategy='mobile'):
+def google_pagespeed_check(check_url, strategy='mobile'):
     """Checks the Pagespeed Insights with Google 
     In addition to the 'mobile' strategy there is also 'desktop' aimed at the desktop user's preferences
     Returns a dictionary of the results.
