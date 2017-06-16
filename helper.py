@@ -26,6 +26,8 @@ def writeFile(file, content):
 
     f.close()
 
+def delete_file(file):
+    os.remove(file)
 
 def getUniqueId(length=5):
     return str(uuid.uuid1()).replace('-', '')[:length]
@@ -129,6 +131,8 @@ def httpRequestGetContent(url):
     if '.gz' in url or '.gzip' in url:
         # the url indicates that it is compressed using Gzip
         return getGzipedContentFromUrl(url)
+
+    timeout_in_seconds = 30
 
     try:
         a = requests.get(url)

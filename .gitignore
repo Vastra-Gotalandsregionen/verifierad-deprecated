@@ -91,3 +91,5 @@ ENV/
 # verifierad.nu specific settings
 /_privatekeys.py
 /tmp/*
+
+*.tmp

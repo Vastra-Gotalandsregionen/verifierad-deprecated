@@ -6,3 +6,5 @@ python-dateutil==2.6.0
 #https://dateutil.readthedocs.io/en/stable/
 python-twitter==3.2.1
 #https://python-twitter.readthedocs.io/en/latest/
+# https://pypi.python.org/pypi/readability
+# pip install https://github.com/andreasvc/readability/tarball/master
