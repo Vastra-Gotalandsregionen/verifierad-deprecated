@@ -8,12 +8,12 @@ A change-log is kept in the file CHANGELOG.md
 """
 from datetime import datetime
 import sys
-import time
 
 import _privatekeys as privatekeys
 import test
 import helper
 from checks.google_pagespeed import google_pagespeed_check
+# from checks.content import content_check # uncomment this line to try the preview of content checks
 
 # local variables
 # url_for_mainProcess = 'http://vgregion.se/'
@@ -31,7 +31,7 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
     urlsInTextfile = []
     iteration_counter = 1
     keep_on = True;
-    time_to_sleep_in_seconds = 90  # TODO: reda ut varför den inte orkar testa flera på raken, begränsning?
+    time_to_sleep_in_seconds = 90  # TODO: reda ut varför Mobile Friendly inte orkar testa flera på raken, begränsning?
 
     output_file = ""
 
@@ -39,12 +39,23 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
         url = f.readline().replace('\n', '')
         mess_to_console = '{0}. {1}'.format(iteration_counter, url)
 
-        if len(
-                url) < 7:  # break while if line is shorter than seven characters, for instance is http:// or https:// assumed as a prefix
+        if len(url) < 7:  # break if line is shorter than seven characters
             keep_on = False
         elif not url.endswith('.pdf'):
             # depending on which test regime is chosen
             if test_regime == 'httpStatusCodeCheck':
+                status_code = test.httpStatusCodeCheck(url, False)
+                print('{0} has a status code: {1}'.format(mess_to_console,
+                                                          status_code).replace('\n', ''))
+                output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
+            elif test_regime == 'sitemapCheck':
+                """
+                Check the status code of domain.tld/sitemap.xml, assuming URL to only be the domain, not an URI
+                """
+                if url[-1:] is '/':
+                    url = url[:-1]
+
+                url = '{0}/{1}'.format(url, 'sitemap.xml')
                 status_code = test.httpStatusCodeCheck(url, False)
                 print('{0} has a status code: {1}'.format(mess_to_console,
                                                           status_code).replace('\n', ''))
@@ -109,25 +120,28 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
                     i = i + 1
             elif test_regime == 'httpStatusCodeCheck':
                 status_code = test.httpStatusCodeCheck(url[1], False)
-                print('{0} has a status code: {1}'.format(mess_to_console, status_code))
+                print('{0}. {01} has a status code: {2}'.format(i, mess_to_console, status_code))
                 output_file += '{0}, {1}\n'.format(url[1].replace('\n', ''), status_code)
                 i = i + 1
             elif test_regime == 'mobileFriendlyCheck':
-                print(url[1])
                 status_message = test.mobileFriendlyCheck(url[1],
                                                           privatekeys.googleMobileFriendlyApiKey)
-                print("Mobile-friendliness of URL '{0}' were evaluated as: {1}".format(
+                print("{0}. Mobile-friendliness of URL '{1}' were evaluated as: {2}".format(i, 
                     url[1], status_message))
                 output_file += '{0}, {1}\n'.format(url[1].replace('\n', ''),
                                                    status_message)
                 i = i + 1
             elif test_regime == 'thirdPartiesCheck':
-                print(url[1])
                 status_message = test.thirdPartiesCheck(url[1])
-                print("Third parties of URL '{0}' were evaluated as: {1}".format(url[1],
+                print("{0}. Third parties of URL '{1}' were evaluated as: {2}".format(i, url[1],
                                                                                  status_message))
                 output_file += '{0}, {1}\n'.format(url[1].replace('\n', ''),
                                                    status_message)
+                i = i + 1
+            elif test_regime == 'contentCheck':
+                print("{0}. Checking content of URL '{1}'.".format(i, url[1]))
+                for key, value in content_check(url[1]).items():
+                        output_file = output_file + '{0},{1},{2}\n'.format(url[1], key, value)
                 i = i + 1
         except:
             print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url[1],
@@ -170,8 +184,9 @@ def checkSitemapsForNewUrls(file):
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-    oneOffProcess('exempelfiler/idg-top-100-2017.txt', 'googlePageSpeed')
-    # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 100, 'vgregion-httpStatusCodeCheck', 'httpStatusCodeCheck')
-    # oneOffFromSitemap('http://www.varberg.se/sitemap.xml', 10,
-    #                  '2017-02-17T06:19:00+01:00', 'pagespeed', 'googlePageSpeed')
+    oneOffProcess('exempelfiler/test-urls.txt', 'sitemapCheck')
+    # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 2000,
+    #                  '2017-02-17T06:19:00+01:00', 'contentCheck', 'contentCheck')
     # checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
+    # for key, value in content_check('http://webbstrategiforalla.se/konferenser/').items():
+    #    print("{key}: {value}".format(key=key, value=value))
