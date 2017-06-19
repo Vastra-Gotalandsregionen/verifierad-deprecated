@@ -32,7 +32,7 @@ def content_check(check_url, strategy='mobile'):
         # soup = soup.encode("ascii")
 
         pagetitle = soup.title.string
-        return_dict['pagetitle'] = pagetitle
+        return_dict['pagetitle'] = '"{0}"'.format(pagetitle)
         pagetitle_length = len(pagetitle)
         return_dict['pagetitle_length'] = pagetitle_length
         num_links = len(soup.find_all('a'))
