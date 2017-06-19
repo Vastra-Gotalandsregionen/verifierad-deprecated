@@ -56,7 +56,7 @@ def content_check(check_url, strategy='mobile'):
             meta_desc = soup.findAll(attrs={"name":"description"})[0]['content']
             return_dict['meta_desc'] = meta_desc
             meta_desc_length = len(meta_desc)
-            return_dict['meta_desc_length'] = meta_desc_length
+            return_dict['meta_desc_length'] = '"{0}"'.format(meta_desc_length)
         except IndexError:
             return_dict['meta_desc'] = ''
             return_dict['meta_desc_length'] = 0
