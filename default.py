@@ -13,7 +13,7 @@ import _privatekeys as privatekeys
 import test
 import helper
 from checks.google_pagespeed import google_pagespeed_check
-# from checks.content import content_check # uncomment this line to try the preview of content checks
+from checks.content import content_check # uncomment this line to try the preview of content checks
 
 # local variables
 # url_for_mainProcess = 'http://vgregion.se/'
@@ -34,6 +34,7 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
     time_to_sleep_in_seconds = 90  # TODO: reda ut varför Mobile Friendly inte orkar testa flera på raken, begränsning?
 
     output_file = ""
+    i = 1
 
     while keep_on:
         url = f.readline().replace('\n', '')
@@ -78,6 +79,13 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
                                                                                      status_message))
                 output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_message)
                 sleep(time_to_sleep_in_seconds)  # sleeping for n seconds
+            elif test_regime == 'contentCheck':
+                print("{0}. Checking content of URL '{1}'.".format(i, url))
+                for key, value in content_check(url).items():
+                        output_file = output_file + '{0},{1},{2}\n'.format(url, key, value)
+                i = i + 1
+            
+            # sleep(time_to_sleep_in_seconds)  # sleeping for n seconds
 
             urlsInTextfile.append(url)
             iteration_counter += 1
@@ -184,7 +192,7 @@ def checkSitemapsForNewUrls(file):
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-    oneOffProcess('exempelfiler/test-urls.txt', 'sitemapCheck')
+    oneOffProcess('exempelfiler/test-urls.txt', 'contentCheck')
     # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 2000,
     #                  '2017-02-17T06:19:00+01:00', 'contentCheck', 'contentCheck')
     # checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
