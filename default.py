@@ -100,9 +100,9 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
     print('The report has now been written to a file named: {0}'.format(file_name))
 
 
-def oneOffFromSitemap(url_to_sitemap, check_limit=50,
-                      date_limit='2017-02-17T06:19:00+01:00', naming='google_pagespeed',
-                      test_regime='googlePageSpeed'):
+def oneOffFromSitemap(url_to_sitemap, check_limit,
+                      date_limit, naming, test_regime):
+
     """Initially only checks a site against Google Pagespeed API
     """
     urls = helper.fetchUrlsFromSitemap(url_to_sitemap, date_limit)
@@ -166,7 +166,8 @@ def oneOffFromSitemap(url_to_sitemap, check_limit=50,
 
 
 # supposed to support scheduling from bash-scripts or hosts such as PythonAnywhere
-def checkSitemapsForNewUrls(file):
+                      
+def checkSitemapsForNewUrls(file, check_limit, date_limit, test_regime):
     """
     Checking a list of predefined sitemaps for new or updated URLs
     
@@ -178,8 +179,9 @@ def checkSitemapsForNewUrls(file):
         sitemap = line.replace('\n', '')
         sitemap_friendly_name = sitemap.replace('http://', '').replace('https://', '').replace('/', '-')
         print('\nInitiating check of sitemap: {0}'.format(sitemap))
-        oneOffFromSitemap(sitemap, 20,
-                      '2017-02-17T06:19:00+01:00', 'pagespeed-{0}'.format(sitemap_friendly_name), 'googlePageSpeed')
+        oneOffFromSitemap(sitemap, check_limit,
+                      date_limit, '{0}-{1}'.format(test_regime, sitemap_friendly_name), test_regime)
+
 
 # iterera runt de URLar som finns och anropa sitemaps
 # kolla om det finns material som är mindre än 14 dagar gammalt (i slutändan kör man denna dagligen per sajt, typ)
@@ -192,9 +194,10 @@ def checkSitemapsForNewUrls(file):
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-    oneOffProcess('exempelfiler/test-urls.txt', 'contentCheck')
+    # oneOffProcess('exempelfiler/test-urls.txt', 'contentCheck')
     # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 2000,
     #                  '2017-02-17T06:19:00+01:00', 'contentCheck', 'contentCheck')
     # checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
+ 	checkSitemapsForNewUrls('exempelfiler/sitemaps.txt', check_limit=99999, date_limit='2017-08-01T06:19:00+01:00', test_regime='contentCheck')
     # for key, value in content_check('http://webbstrategiforalla.se/konferenser/').items():
     #    print("{key}: {value}".format(key=key, value=value))
