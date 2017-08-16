@@ -54,9 +54,9 @@ def content_check(check_url, strategy='mobile'):
 
         try:
             meta_desc = soup.findAll(attrs={"name":"description"})[0]['content']
-            return_dict['meta_desc'] = meta_desc
+            return_dict['meta_desc'] = '"{0}"'.format(meta_desc)
             meta_desc_length = len(meta_desc)
-            return_dict['meta_desc_length'] = '"{0}"'.format(meta_desc_length)
+            return_dict['meta_desc_length'] = meta_desc_length
         except IndexError:
             return_dict['meta_desc'] = ''
             return_dict['meta_desc_length'] = 0
@@ -67,17 +67,16 @@ def content_check(check_url, strategy='mobile'):
         # checking readability
         [s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title'])]
         
-        # uncomment if you want get readability for the whole page. of course comment the section below this line at the same time.
-        #visible_text = soup.getText()
-        
-        # "pagecontent" is the div that you want to get the content from. CHANGE IT to what ever you are using.
-        visible_text = soup.find("div", class_="pagecontent").getText()
+        if 1 is 1:
+            # if you want get readability for the whole page then the statement above should read "if 1 is 1:", otherwise "if 1 is 2:" to enter else below
+            visible_text = soup.getText()
+        else:
+            # attribute "main" might in your code be a "div", "pagecontent" is the class where you want to get the content from. CHANGE IT to what ever you are using.
+            visible_text = soup.find("main", class_="main-wrapper").getText()
 
-        visible_text = "?\n".join(visible_text.split("?"))
-        visible_text = "!\n".join(visible_text.split("!"))
-        visible_text = ".\n".join(visible_text.split("."))
-        
-        ###
+            visible_text = "?\n".join(visible_text.split("?"))
+            visible_text = "!\n".join(visible_text.split("!"))
+            visible_text = ".\n".join(visible_text.split("."))
 
         file_name = 'tmp/{0}_{1}_{2}.txt'.format(str(datetime.today())[:10], 'contentCheck',
                                                        helper.getUniqueId())
@@ -86,7 +85,7 @@ def content_check(check_url, strategy='mobile'):
         readability = subprocess.check_output(['readability', file_name])
         readability = readability.decode("utf-8")
         
-        # helper.delete_file(file_name) # uncomment if you'd like to see the text files that are used
+        helper.delete_file(file_name) # uncomment if you'd like to see the text files that are used
         # helper.writeFile('tmp/readability-output.txt', readability) # uncomment if you'd like to see the readability output
 
         for line in readability.split('\n'):
