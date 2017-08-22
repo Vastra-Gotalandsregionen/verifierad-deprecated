@@ -145,11 +145,12 @@ def httpRequestGetContent(url):
         pass
 
 
-def isSitemap(content):
-    """Check a string to see if it is a sitemap/siteindex
+def is_sitemap(content):
+    """Check a string to see if its content is a sitemap or siteindex.
 
-    Attributes: content
+    Attributes: content (string)
     """
+    if 'http://www.sitemaps.org/schemas/sitemap/' in content or '<sitemapindex' in content: return True
 
     return False
 
