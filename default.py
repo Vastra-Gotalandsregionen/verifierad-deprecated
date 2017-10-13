@@ -60,7 +60,11 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
                 status_code = test.httpStatusCodeCheck(url, False)
                 print('{0} has a status code: {1}'.format(mess_to_console,
                                                           status_code).replace('\n', ''))
-                output_file += '{0}, {1}\n'.format(url.replace('\n', ''), status_code)
+                is_sitemap = "undefined"
+                if str(status_code)[:1] is "2" or str(status_code)[:1] is "3": # checking if status code is either 200 series or 300
+                    is_sitemap = helper.is_sitemap(helper.httpRequestGetContent(url))
+                    print('Is sitemap: {0}'.format(is_sitemap))
+                output_file += '{0}, {1}, {2}\n'.format(url.replace('\n', ''), status_code, is_sitemap)
             elif test_regime == 'googlePageSpeed':
                 check_page = google_pagespeed_check(url)
                 if bool(check_page):
@@ -194,10 +198,10 @@ def checkSitemapsForNewUrls(file, check_limit, date_limit, test_regime):
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-    # oneOffProcess('exempelfiler/test-urls.txt', 'contentCheck')
+    oneOffProcess('exempelfiler/test-urls.txt', 'sitemapCheck')
     # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 2000,
     #                  '2017-02-17T06:19:00+01:00', 'contentCheck', 'contentCheck')
     # checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
- 	checkSitemapsForNewUrls('exempelfiler/sitemaps.txt', check_limit=99999, date_limit='2017-08-01T06:19:00+01:00', test_regime='contentCheck')
+ 	# checkSitemapsForNewUrls('exempelfiler/sitemaps.txt', check_limit=99999, date_limit='2017-08-01T06:19:00+01:00', test_regime='contentCheck')
     # for key, value in content_check('http://webbstrategiforalla.se/konferenser/').items():
     #    print("{key}: {value}".format(key=key, value=value))

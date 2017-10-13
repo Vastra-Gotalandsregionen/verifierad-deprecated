@@ -113,15 +113,26 @@ def getGzipedContentFromUrl(url):
     unique_id = getUniqueId(5)
     file_name = 'tmp/file-{0}.gz'.format(unique_id)
 
-    r = requests.get(url, stream=True)
-    with open(file_name, 'wb') as fd:
-        for chunk in r.iter_content(chunk_size=128):
-            fd.write(chunk)
+    try:
+        r = requests.get(url, stream=True)
+        with open(file_name, 'wb') as fd:
+            for chunk in r.iter_content(chunk_size=128):
+                fd.write(chunk)
 
-    with gzip.open(file_name, 'rb') as f:
-        file_content = f.read()
+        with gzip.open(file_name, 'rb') as f:
+            file_content = f.read()
 
-    return file_content
+        return file_content
+    except SSLError:
+        if 'http://' in url: # trying the same URL over SSL/TLS
+            return getGzipedContentFromUrl(url.replace('http://', 'https://'))
+        else:
+            return None
+    except:
+        print(
+            'Error! Unfortunately the request for URL "{0}" either timed out or failed for other reason(s). The timeout is set to {1} seconds.\nMessage:\n{2}'.format(
+                url, timeout_in_seconds, sys.exc_info()[0]))
+        return None
 
 
 def httpRequestGetContent(url):
@@ -138,11 +149,16 @@ def httpRequestGetContent(url):
         a = requests.get(url)
 
         return a.text
+    except SSLError:
+        if 'http://' in url: # trying the same URL over SSL/TLS
+            return httpRequestGetContent(url.replace('http://', 'https://'))
+        else:
+            return None
     except:
         print(
             'Error! Unfortunately the request for URL "{0}" either timed out or failed for other reason(s). The timeout is set to {1} seconds.\nMessage:\n{2}'.format(
                 url, timeout_in_seconds, sys.exc_info()[0]))
-        pass
+        pass #borde vara None?
 
 
 def is_sitemap(content):
@@ -150,7 +166,8 @@ def is_sitemap(content):
 
     Attributes: content (string)
     """
-    if 'http://www.sitemaps.org/schemas/sitemap/' in content or '<sitemapindex' in content: return True
+    if 'http://www.sitemaps.org/schemas/sitemap/' in content or '<sitemapindex' in content: 
+        return True
 
     return False
 
