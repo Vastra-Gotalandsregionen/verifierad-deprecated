@@ -7,6 +7,7 @@ import uuid
 import dateutil.parser
 import datetime
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse, urljoin
 import gzip
 import requests
 import json
@@ -78,7 +79,11 @@ def fetchUrlsFromSitemap(url, limit=None):
                     ".ttf" not in lvl1_url.text.lower()) and (
                     ".eot" not in lvl1_url.text.lower()) and (
                     ".bak" not in lvl1_url.text.lower()) and (
-                    ".woff" not in lvl1_url.text.lower()):
+                    ".woff" not in lvl1_url.text.lower()) and (
+                    "javascript:" not in lvl1_url.text.lower()) and (
+                    "tel:" not in lvl1_url.text.lower()) and (
+                    "mailto:" not in lvl1_url.text.lower()) and (
+                    "#" not in lvl1_url.text.lower()):
                     if lvl1_url.lastmod is not None:
                         date = dateutil.parser.parse(lvl1_url.lastmod.string).replace(tzinfo=None)
                     if limit is not None and date is not None and date > limit:
@@ -104,6 +109,58 @@ def fetchUrlsFromSitemap(url, limit=None):
 
     print('Found {0} URLs in the sitemap you provided.'.format(len(found_urls)))
     return sorted(found_urls, key=getKey, reverse=True)
+
+
+def fetchUrlsFromPage(url, num_limit=None, local_only=True):
+    """Given a URL contained URLs are returned as a list with tuples. Optional to number of URLs and if to only include URLs within the local website.
+        
+        Attributes: url (string), num_limit (integer), local_only (bool)
+    """
+    main_url = urlparse(url)
+    found_urls = list()
+    page = httpRequestGetContent(url)
+    soup = BeautifulSoup(page, "html.parser")
+    i = 0
+    
+    for the_url in soup.find_all('a', href=True):
+        if (".pdf" not in the_url['href'].lower()) and (
+                ".jpg" not in the_url['href'].lower()) and (
+                ".mp4" not in the_url['href'].lower()) and (
+                ".mp3" not in the_url['href'].lower()) and (
+                ".txt" not in the_url['href'].lower()) and (
+                ".png" not in the_url['href'].lower()) and (
+                ".gif" not in the_url['href'].lower()) and (
+                ".svg" not in the_url['href'].lower()) and (
+                ".eps" not in the_url['href'].lower()) and (
+                ".doc" not in the_url['href'].lower()) and (
+                ".docx" not in the_url['href'].lower()) and (
+                ".xls" not in the_url['href'].lower()) and (
+                ".js" not in the_url['href'].lower()) and (
+                ".css" not in the_url['href'].lower()) and (
+                ".xlsx" not in the_url['href'].lower()) and (
+                ".ttf" not in the_url['href'].lower()) and (
+                ".eot" not in the_url['href'].lower()) and (
+                ".bak" not in the_url['href'].lower()) and (
+                ".woff" not in the_url['href'].lower()) and (
+                "javascript:" not in the_url['href'].lower()) and (
+                "tel:" not in the_url['href'].lower()) and (
+                "callto:" not in the_url['href'].lower()) and (
+                "mailto:" not in the_url['href'].lower()) and (
+                "#" not in the_url['href'].lower()):
+                    found_url = urlparse(the_url['href'])
+
+                    if local_only and (len(found_url.netloc) is 0 or found_url.netloc is main_url.netloc):
+                        if len(found_url.netloc) is 0:
+                            found_url = urljoin(url, found_url.geturl())
+                            if found_url not in found_urls:   # making the entries unique
+                                found_urls.append(found_url)
+                                i+=1
+
+    if num_limit is not None:
+        found_urls = found_urls[:num_limit]
+
+    print('Found {0} URLs on the page you provided, returning {1} of them.'.format(i, len(found_urls)))
+    return found_urls[:num_limit]
 
 
 def getGzipedContentFromUrl(url):
@@ -149,16 +206,18 @@ def httpRequestGetContent(url):
         a = requests.get(url)
 
         return a.text
-    except SSLError:
+    except requests.exceptions.SSLError:
         if 'http://' in url: # trying the same URL over SSL/TLS
+            print('Info: Trying SSL before giving up.')
             return httpRequestGetContent(url.replace('http://', 'https://'))
-        else:
-            return None
+    except requests.exceptions.ConnectionError:
+        print(
+            'Connection error! Unfortunately the request for URL "{0}" failed.\nMessage:\n{1}'.format(url, sys.exc_info()[0]))
+        pass
     except:
         print(
-            'Error! Unfortunately the request for URL "{0}" either timed out or failed for other reason(s). The timeout is set to {1} seconds.\nMessage:\n{2}'.format(
-                url, timeout_in_seconds, sys.exc_info()[0]))
-        pass #borde vara None?
+            'Error! Unfortunately the request for URL "{0}" either timed out or failed for other reason(s). The timeout is set to {1} seconds.\nMessage:\n{2}'.format(url, timeout_in_seconds, sys.exc_info()[0]))
+        pass
 
 
 def is_sitemap(content):
@@ -177,12 +236,12 @@ If file is executed on itself then call a definition, mostly for testing purpose
 """
 if __name__ == '__main__':
     # fetchUrlsFromSitemap('http://webbstrategiforalla.se/sitemap.xml')
-    tmp = fetchUrlsFromSitemap('http://www.varberg.se/sitemap.xml',
-                               '2017-02-17T06:19:00+01:00')
-    print(len(tmp))
+    # tmp = fetchUrlsFromSitemap('http://www.varberg.se/sitemap.xml', '2017-02-17T06:19:00+01:00')
+    # print(len(tmp))
 
-    for bla in tmp:
-        print('{0} lastmod for {1}'.format(bla[0], bla[1]))
-    # print('Tjo')
+    # for bla in tmp:
+    #    print('{0} lastmod for {1}'.format(bla[0], bla[1]))
+    for url in fetchUrlsFromPage('https://www.arbetsformedlingen.se/', 20):
+        print(url)
 
     # httpRequestGetContent('http://vgregion.se')

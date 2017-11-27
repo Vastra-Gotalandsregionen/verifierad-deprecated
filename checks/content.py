@@ -103,6 +103,21 @@ def content_check(check_url, strategy='mobile'):
 
     return return_dict
 
+def find_string(to_find, check_url):
+    check_url = check_url.strip()
+    
+
+    try:
+        get_content = helper.httpRequestGetContent(check_url)
+        # soup = BeautifulSoup(get_content, "html.parser") # to use if not checking HTML code
+
+        if to_find in get_content:
+            return True
+        else:
+            return False
+    except:
+        print('Error! Unfortunately the request for URL "{0}" failed, message:\n{1}'.format(check_url, sys.exc_info()[0]))
+        pass
 
 # För svenska
 # Under 25  Barnböcker.

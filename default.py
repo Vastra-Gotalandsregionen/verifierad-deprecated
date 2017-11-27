@@ -13,7 +13,7 @@ import _privatekeys as privatekeys
 import test
 import helper
 from checks.google_pagespeed import google_pagespeed_check
-from checks.content import content_check # uncomment this line to try the preview of content checks
+# from checks.content import content_check, find_string # uncomment this line to try the preview of content checks
 
 # local variables
 # url_for_mainProcess = 'http://vgregion.se/'
@@ -65,6 +65,20 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
                     is_sitemap = helper.is_sitemap(helper.httpRequestGetContent(url))
                     print('Is sitemap: {0}'.format(is_sitemap))
                 output_file += '{0}, {1}, {2}\n'.format(url.replace('\n', ''), status_code, is_sitemap)
+            elif test_regime == 'urlHarvest':
+                """
+                Fetches URLs from a page's content
+                """
+                i = 0
+                print('Harvesting URLs from {0}'.format(url))
+                try:
+                    for found_url in helper.fetchUrlsFromPage(url, 50):
+                        output_file += '{0}\n'.format(found_url)
+                        i+=1
+                except:
+                    print('Error! The URL {0} failed.'.format(url))
+                    pass
+                #print('Found {0} URLs from {1}'.format(i,url))
             elif test_regime == 'googlePageSpeed':
                 check_page = google_pagespeed_check(url)
                 if bool(check_page):
@@ -87,6 +101,11 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
                 print("{0}. Checking content of URL '{1}'.".format(i, url))
                 for key, value in content_check(url).items():
                         output_file = output_file + '{0},{1},{2}\n'.format(url, key, value)
+                i = i + 1
+            elif test_regime == 'findString':
+                searching = find_string('piwik', url)
+                print("{0}. Checking for string in URL '{1}' - {2}".format(i, url, searching))
+                output_file = output_file + '{0},{1}\n'.format(url, searching)
                 i = i + 1
             
             # sleep(time_to_sleep_in_seconds)  # sleeping for n seconds
