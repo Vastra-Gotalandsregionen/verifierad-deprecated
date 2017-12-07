@@ -3,10 +3,32 @@
 	{
 		"selected_items":
 		[
+			[
+				"is",
+				"is_redirecting"
+			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "checks/technical.py",
+			"settings":
+			{
+				"buffer_size": 1801,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "helper.py",
+			"settings":
+			{
+				"buffer_size": 6168,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -40,14 +62,15 @@
 	},
 	"expanded_folders":
 	[
-		"/C/Users/marcus/Documents/GitHub/verifierad.nu"
+		"/Users/marcusosterberg/Documents/öppna program-github/verifierad.nu",
+		"/Users/marcusosterberg/Documents/öppna program-github/verifierad.nu/checks"
 	],
 	"file_history":
 	[
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -61,6 +84,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"isSitemap"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -78,8 +102,68 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "checks/technical.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1801,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1732,
+								1732
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 13.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "helper.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6168,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4093,
+								4093
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1192.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -156,7 +240,7 @@
 	"settings":
 	{
 	},
-	"show_minimap": true,
+	"show_minimap": false,
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
