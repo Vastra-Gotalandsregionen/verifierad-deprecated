@@ -219,7 +219,7 @@ http://www.finspang.se
 http://www.ap4.se
 http://www.flen.se
 http://www.folkebernadotteacademy.se
-http://www.folkhalsomyndigheten.se
+https://www.folkhalsomyndigheten.se
 http://www.forskarskattenamnden.se
 http://www.formas.se
 http://www.fas.se

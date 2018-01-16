@@ -95,3 +95,7 @@ ENV/
 *.tmp
 
 *.tmp
+
+*.sublime-workspace
+
+verifierad.sublime-workspace
