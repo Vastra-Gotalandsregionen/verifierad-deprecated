@@ -26,7 +26,7 @@ def google_pagespeed_check(check_url, strategy='mobile'):
     check_url = check_url.strip()
 
     # urlEncodedURL = parse.quote_plus(check_url)	# making sure no spaces or other weird characters f*cks up the request, such as HTTP 400
-    pagespeed_api_request = 'https://www.googleapis.com/pagespeedonline/v2/runPagespeed?url={}&strategy={}&key={}'.format(
+    pagespeed_api_request = 'https://www.googleapis.com/pagespeedonline/v4/runPagespeed?url={}&strategy={}&key={}'.format(
         check_url, strategy, privatekeys.googlePageSpeedApiKey)
     # print('HTTP request towards GPS API: {}'.format(pagespeed_api_request))
 
@@ -78,3 +78,50 @@ def google_pagespeed_check(check_url, strategy='mobile'):
                                                                            sys.exc_info()[
                                                                                0]))
         pass
+
+def check_lighthouse(url, strategy='mobile', category='performance'):
+    """
+    perf = https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=performance&strategy=mobile&url=YOUR-SITE&key=YOUR-KEY
+    a11y = https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=accessibility&strategy=mobile&url=YOUR-SITE&key=YOUR-KEY
+    practise = https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=best-practices&strategy=mobile&url=YOUR-SITE&key=YOUR-KEY
+    pwa = https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=pwa&strategy=mobile&url=YOUR-SITE&key=YOUR-KEY
+    seo = https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=seo&url=YOUR-SITE&key=YOUR-KEY
+    """
+    check_url = url.strip()
+    
+    pagespeed_api_request = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category={0}&url={1}&key={2}'.format(category, check_url, privatekeys.googlePageSpeedApiKey)
+    
+    get_content = ''
+    
+    try:
+        get_content = helper.httpRequestGetContent(pagespeed_api_request)
+    except:  # breaking and hoping for more luck with the next URL
+        print(
+            'Error! Unfortunately the request for URL "{0}" failed, message:\n{1}'.format(
+                check_url, sys.exc_info()[0]))
+        pass
+    
+    #print('Checked \'{0}\' successfully against Google\'s API!'.format(pagespeed_api_request))
+    json_content = ''
+
+    try:
+        json_content = json.loads(get_content)
+    except:  # might crash if checked resource is not a webpage
+        print('Error! JSON failed parsing for the URL "{0}"\nMessage:\n{1}'.format(
+            check_url, sys.exc_info()[0]))
+        pass
+    
+    #print(json_content)
+
+    return_dict = {}
+    return_dict = json_content['lighthouseResult']['audits']['metrics']['details']['items'][0]
+    
+    for item in json_content['lighthouseResult']['audits'].keys():
+        try:
+            return_dict[item] = json_content['lighthouseResult']['audits'][item]['numericValue']
+        except:
+            # has no 'numericValue'
+            #print(item, 'har inget värde')
+            pass
+    
+    return return_dict

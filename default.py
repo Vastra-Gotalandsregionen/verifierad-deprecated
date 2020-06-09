@@ -12,7 +12,7 @@ import sys
 import _privatekeys as privatekeys
 import test
 import helper
-from checks.google_pagespeed import google_pagespeed_check
+from checks.google_pagespeed import google_pagespeed_check, check_lighthouse
 # from checks.content import content_check, find_string # uncomment this line to try the preview of content checks
 
 # local variables
@@ -80,7 +80,7 @@ def oneOffProcess(file, test_regime='httpStatusCodeCheck'):
                     pass
                 #print('Found {0} URLs from {1}'.format(i,url))
             elif test_regime == 'googlePageSpeed':
-                check_page = google_pagespeed_check(url)
+                check_page = check_lighthouse(url)
                 if bool(check_page):
                     print('{0} has been checked against Google Pagespeed API'.format(
                         mess_to_console))
@@ -139,7 +139,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit,
             break
         try:
             if test_regime == 'googlePageSpeed':
-                check_page = google_pagespeed_check(url[1])
+                check_page = check_lighthouse(url[1])
                 if bool(check_page):
                     print('{0} has been checked against Google Pagespeed API'.format(
                         mess_to_console))
@@ -164,10 +164,8 @@ def oneOffFromSitemap(url_to_sitemap, check_limit,
                 i = i + 1
             elif test_regime == 'thirdPartiesCheck':
                 status_message = test.thirdPartiesCheck(url[1])
-                print("{0}. Third parties of URL '{1}' were evaluated as: {2}".format(i, url[1],
-                                                                                 status_message))
-                output_file += '{0}, {1}\n'.format(url[1].replace('\n', ''),
-                                                   status_message)
+                print("{0}. Third parties of URL '{1}' were evaluated as: {2}".format(i, url[1], status_message))
+                output_file += '{0}, {1}\n'.format(url[1].replace('\n', ''), status_message)
                 i = i + 1
             elif test_regime == 'contentCheck':
                 print("{0}. Checking content of URL '{1}'.".format(i, url[1]))
@@ -175,9 +173,7 @@ def oneOffFromSitemap(url_to_sitemap, check_limit,
                         output_file = output_file + '{0},{1},{2}\n'.format(url[1], key, value)
                 i = i + 1
         except:
-            print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url[1],
-                                                                                   sys.exc_info()[
-                                                                                       0]))
+            print('Error! The request for URL "{0}" failed.\nMessage:\n{2}'.format(url[1], sys.exc_info()))
             pass
             i = i + 1
 
@@ -217,9 +213,9 @@ def checkSitemapsForNewUrls(file, check_limit, date_limit, test_regime):
 If file is executed on itself then call on a definition
 """
 if __name__ == '__main__':
-    oneOffProcess('exempelfiler/test-urls.txt', 'sitemapCheck')
-    # oneOffFromSitemap('http://www.vgregion.se/sitemap.xml', 2000,
-    #                  '2017-02-17T06:19:00+01:00', 'contentCheck', 'contentCheck')
+    #oneOffProcess('exempelfiler/2020-03-18-covidtest.txt', 'googlePageSpeed')
+    oneOffFromSitemap('https://www.vgregion.se/sitemap.xml', 10,
+                      '2019-02-17T06:19:00+01:00', 'googlePageSpeed', 'googlePageSpeed')
     # checkSitemapsForNewUrls('exempelfiler/sitemaps.txt')
  	# checkSitemapsForNewUrls('exempelfiler/sitemaps.txt', check_limit=99999, date_limit='2017-08-01T06:19:00+01:00', test_regime='contentCheck')
     # for key, value in content_check('http://webbstrategiforalla.se/konferenser/').items():
